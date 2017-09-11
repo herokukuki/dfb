@@ -12,10 +12,11 @@
     "leech",
     "server"
   ],
-  "author": "Nam Huynh",
+  "author": "mksimpler",
   "license": "MIT",
   "devDependencies": {
     "chai": "^4.1.2",
+    "mocha": "^3.5.2",
     "nodemon": "^1.12.0"
   },
   "dependencies": {
