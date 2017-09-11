@@ -1,0 +1,35 @@
+
+div.my-value {
+    margin-left: 15px;
+}
+
+    div.my-value p {
+        margin-bottom: 10px;
+    }
+
+div.search-url p {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+p.name {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+p.transname {
+    font-size: 1.5em;
+}
+
+thead {
+    font-size: 1.5em;
+    text-align: center;
+}
+
+    thead th {
+        padding-left: 20px;
+    }
+
+.more-btn {
+    text-align: center;
+}

@@ -1,0 +1,264 @@
+<% include ../util.ejs %>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <meta name="keywords" content="<%= name + ',' + tags.select(function(t){return t.text}).join() %>">
+    <meta name="name" content="<%= name %>">
+    <meta name="transname" content="<%= transname %>">
+    <meta name="birthday" content="<%= birthday %>">
+    <meta name="birthplace" content="<%= birthplace %>">
+    <title>
+        <%= name %>
+    </title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="/assets/styles/reset.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <link rel="stylesheet" href="/assets/styles/default.css">
+    <link rel="stylesheet" href="/assets/styles/human.details.css">
+    <script type="text/javascript">
+        function openLink(url) {
+            var newtab = window.open(url, '_blank');
+            newtab.focus();
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="row my-name">
+            <p>
+                <h2>
+                    <%= name %>
+                </h2>
+            </p>
+        </div>
+
+        <div class="row">
+
+            <div class="col m5 s12 l6">
+                <div class="container">
+
+                    <div class="row">
+                        <!-- Photo -->
+                        <img class="materialboxed z-depth-5" src="<%= photos[0] %>" />
+                    </div>
+
+                    <% if (rating != null) { %>
+                    <div class="row">
+                        <table class="rate-table highlight" width="100%" cellspacing="2" cellpadding="0" border="0">
+                            <tbody>
+                                <tr>
+                                    <td class="header">Looks</td>
+                                    <td class="bar" width="50%">
+                                        <div class="w3-border">
+                                            <div class="bar blue darken-2" style="width:<%= rating.looks*10 %>%"></div>
+                                        </div>
+                                    </td>
+                                    <td class="value">
+                                        <%= Numeric.format(rating.looks, 2) %>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="header">Body</td>
+                                    <td class="bar" width="50%">
+                                        <div class="w3-border">
+                                            <div class="bar blue darken-2" style="width:<%= rating.body*10 %>%"></div>
+                                        </div>
+                                    </td>
+                                    <td class="value">
+                                        <%= Numeric.format(rating.body, 2) %>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="header">Cute</td>
+                                    <td class="bar" width="50%">
+                                        <div class="w3-border">
+                                            <div class="bar blue darken-2" style="width:<%= rating.cute*10 %>%"></div>
+                                        </div>
+                                    </td>
+                                    <td class="value">
+                                        <%= Numeric.format(rating.cute, 2) %>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="header">Fappa</td>
+                                    <td class="bar" width="50%">
+                                        <div class="w3-border">
+                                            <div class="bar blue darken-2" style="width:<%= rating.fappable*10 %>%"></div>
+                                        </div>
+                                    </td>
+                                    <td class="value">
+                                        <%= Numeric.format(rating.fappable, 2) %>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="header">Total</td>
+                                    <td class="bar" width="50%">
+                                        <div class="w3-border">
+                                            <div class="bar blue darken-2" style="width:<%= rating.total*10 %>%"></div>
+                                        </div>
+                                    </td>
+                                    <td class="value">
+                                        <b><%= Numeric.format(rating.total, 2) %></b>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="col m7 s12 l6 pull-l1">
+
+                <div class="col m12">
+
+                    <div class="container">
+
+                        <div class="row my-value">
+                            <span>Translated name:</span>
+                            <p>
+                                <%= transname %>
+                            </p>
+                        </div>
+
+                        <!--
+                        <% nicknames.forEach(function (nname) { %>
+                            <div class="row my-value">
+                                <span>Nickname:</span>
+                                <p>
+                                    <%= nname %>
+                                </p>
+                            </div>
+                        <% }); %>
+
+                        <% aliases.forEach(function (alias) { %>
+                            <div class="row my-value">
+                                <span>Nickname:</span>
+                                <p>
+                                    <%= alias %>
+                                </p>
+                            </div>
+                        <% }); %>
+                        -->
+
+                        <div class="row my-value">
+                            <span>Nickname:</span>
+                            <% nicknames.forEach(function (nname) { %>
+                            <p>
+                                <%= nname %>
+                            </p>
+                            <% }); %>
+                        </div>
+
+                        <div class="row my-value">
+                            <span>Alias:</span>
+                            <% aliases.forEach(function (alias) { %>
+                            <p>
+                                <%= alias %>
+                            </p>
+                            <% }); %>
+                        </div>
+
+                        <div class="row my-value">
+                            <span>Birthday:</span>
+                            <p>
+                                <%= birthday %>
+                            </p>
+                        </div>
+
+                        <div class="row my-value">
+                            <span>Birthplace:</span>
+                            <p>
+                                <%= birthplace %>
+                            </p>
+                        </div>
+
+                        <div class="row my-value">
+                            <table class="highlight centered">
+                                <thead>
+                                    <tr>
+                                        <th>Tall</th>
+                                        <th>Bust</th>
+                                        <th>Waist</th>
+                                        <th>Hip</th>
+                                        <th>Shoes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <%= bio.tall %>
+                                        </td>
+                                        <td>
+                                            <%= bio.bust %>
+                                        </td>
+                                        <td>
+                                            <%= bio.waist %>
+                                        </td>
+                                        <td>
+                                            <%= bio.hip %>
+                                        </td>
+                                        <td>
+                                            <%= bio.shoes %>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="row my-value">
+                            <span>Cup:</span>
+                            <p>
+                                <%= bio.cup %>
+                            </p>
+                        </div>
+
+                        <div class="row my-value">
+                            <span>Blood Type:</span>
+                            <p>
+                                <%= bio.blood %>
+                            </p>
+                        </div>
+
+                        <div class="row my-value">
+                            <span>URL:</span>
+                            <p>
+                                <a href="javascript:void(0)" class="truncate" onclick="openLink('<%= url %>')">
+                                    <%= url %>
+                                </a>
+                            </p>
+                        </div>
+
+                        <div class="row my-value">
+                            <span>Tags:</span>
+                            <div>
+                                <% tags.forEach(function (tag) { %>
+                                <div class="chip">
+                                    <a href="javascript:void(0)" onclick="openLink('<%= tag.url %>')">
+                                        <%= tag.text %>
+                                    </a>
+                                </div>
+                                <% }); %>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+</body>
+
+</html>

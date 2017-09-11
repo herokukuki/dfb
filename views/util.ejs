@@ -1,0 +1,35 @@
+<%
+Array.prototype.select = function (selector) {
+    if (!selector) {
+        return this;
+    }
+
+    var val = [];
+
+    this.forEach(function (ele) {
+        val.push(selector(ele));
+    });
+
+    return val;
+}
+
+function getAge (dateString) {
+    var today = new Date();
+    var birthDate = new Date(dateString);
+    var age = today.getFullYear() - birthDate.getFullYear();
+    var m = today.getMonth() - birthDate.getMonth();
+    
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    return age;
+}
+
+Numeric = {
+    // Format numeric number after point.
+    format: function (val, n) {
+        return parseFloat(Math.round(val * 100) / 100).toFixed(n);
+    }
+}
+%>

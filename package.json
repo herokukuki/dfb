@@ -1,0 +1,29 @@
+{
+  "name": "leech-server",
+  "version": "1.0.0",
+  "description": "Leech Server (leech all in one server)",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "start": "nodemon index.js",
+    "debug": "mocha debug"
+  },
+  "keywords": [
+    "leech",
+    "server"
+  ],
+  "author": "Nam Huynh",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "nodemon": "^1.12.0"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "ejs-locals": "^1.0.2",
+    "express": "^4.14.0",
+    "iconv-lite": "^0.4.18",
+    "request": "^2.81.0",
+    "sanitize-filename": "^1.6.1"
+  }
+}

@@ -1,0 +1,84 @@
+<% include ../util.ejs %>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <title>
+        Search result for <%= queryString %>
+    </title>
+    <link rel="stylesheet" href="/assets/styles/reset.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <link rel="stylesheet" href="/assets/styles/default.css">
+    <link rel="stylesheet" href="/assets/styles/human.list.css">
+    <script type="text/javascript">
+        function openLink(url) {
+            var newtab = window.open(url, '_blank');
+            newtab.focus();
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        
+        <div class="row">
+            <p><h4>Search result for <span class="i b"><%= queryString %></span></h4></p>
+            <hr />
+        </div>
+
+        <div class="row">
+            <div class="col m12 s12 l12">
+                <table class="bordered striped">
+                    <thead>
+                        <th>Name</th>
+                    </thead>
+                    <tbody>
+                    <% results.forEach(function (result) { %>
+                        <tr>
+                            <td width="25%">
+                                <img class="materialboxed z-depth-5" src="<%= result.photos[0] %>">
+                            </td>
+                            <td width="75%">
+                                <div class="my-value">
+                                    <p class="name">
+                                        <a href="javascript:void(0)" 
+                                            onclick="openLink('<%= result['local-url'] %>')">
+                                            <%= result.name %>
+                                        </a>
+                                    </p>
+                                    <p class="transname"><%= result.transname %></p>
+                                    <p class="url">
+                                        <a href="javascript:void(0)" 
+                                            onclick="openLink('<%= result.url %>')">
+                                            minnano-av.com
+                                        </a>
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <% if (more) { %>
+            <div class="row more-btn">
+                <a class="waves-effect waves-light blue lighten-1 btn" 
+                    href="javascript:void(0)" onclick="openLink('<%= url %>')">
+                    More
+                </a>
+            </div>
+        <% }; %>
+        
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+</body>
+
+</html>
