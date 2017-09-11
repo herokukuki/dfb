@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
+    "clone": "^2.1.1",
     "ejs-locals": "^1.0.2",
     "express": "^4.14.0",
     "iconv-lite": "^0.4.18",

@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const clone = require('clone');
 
 const { HumanInfo } = require('../libs/types.js');
 
@@ -57,17 +58,19 @@ function crawlHuman (crawler, url) {
 
             return crawler.crawl(url)
             .then(dd => {
+                let info = clone(d);
+
                 if (dd != null) {
                     if (dd.photos.length > 0) {
-                        d.photos = dd.photos;
+                        info.photos = dd.photos;
                     }
 
                     if (dd.tags.length > 0) {
-                        d.tags = dd.tags;
+                        info.tags = dd.tags;
                     }
                 }
                 
-                return d;
+                return info;
             });
         }
     });
