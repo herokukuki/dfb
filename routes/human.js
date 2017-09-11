@@ -1,7 +1,7 @@
 'use strict';
 
 const spider = require('../libs/spider.js');
-const { HumanInfo, SearchResult } = require('../libs/types.js');
+const { HumanName, HumanInfo, SearchResult } = require('../libs/types.js');
 const cache = require('../config/cache.js');
 
 const express = require('express');
@@ -17,12 +17,18 @@ router.get('/', function (req, res) {
             'http://cdn.javmodel.com/javdata/uploads/tsubomi150.jpg'
         ],
 
-        name: 'つぼみ',
-
-        transname: 'つぼみ / Tsubomi',
+        name: new HumanName({
+            value: 'つぼみ',
+            type: 'ja',
+            hiragana: 'つぼみ',
+            engname: 'Tsubomi',
+        }),
 
         nicknames: [
-            'つぼみん'
+            new HumanName({
+                value: 'つぼみん',
+                type: 'ja',
+            })
         ],
 
         aliases: [
