@@ -1,4 +1,4 @@
-<% include ../util.ejs %>
+<% include ../utils %>
 
 <!DOCTYPE html>
 <html>
@@ -6,13 +6,13 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="Content-Style-Type" content="text/css">
-    <meta name="keywords" content="<%= name + ',' + tags.select(function(t){return t.text}).join() %>">
-    <meta name="name" content="<%= name %>">
-    <meta name="transname" content="<%= transname %>">
+    <meta name="keywords" content="<%= name.og + ',' + tags.select(function(t){return t.text}).join() %>">
+    <meta name="name" content="<%= name.og %>">
+    <meta name="transname" content="<%= name.en %>">
     <meta name="birthday" content="<%= birthday %>">
     <meta name="birthplace" content="<%= birthplace %>">
     <title>
-        <%= name %>
+        <%= formatJapaneseName(name) %>
     </title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="/assets/styles/reset.css">
@@ -33,7 +33,7 @@
         <div class="row my-name">
             <p>
                 <h2>
-                    <%= name %>
+                    <%= name.og %>
                 </h2>
             </p>
         </div>
@@ -123,7 +123,7 @@
                         <div class="row my-value">
                             <span>Translated name:</span>
                             <p>
-                                <%= transname %>
+                                <%= name.hiragana %> / <%= name.en %>
                             </p>
                         </div>
 
@@ -132,7 +132,7 @@
                             <div class="row my-value">
                                 <span>Nickname:</span>
                                 <p>
-                                    <%= nname %>
+                                    <%= formatJapaneseName(nname) %>
                                 </p>
                             </div>
                         <% }); %>
@@ -141,7 +141,7 @@
                             <div class="row my-value">
                                 <span>Nickname:</span>
                                 <p>
-                                    <%= alias %>
+                                    <%= formatJapaneseName(alias) %>
                                 </p>
                             </div>
                         <% }); %>
@@ -151,7 +151,7 @@
                             <span>Nickname:</span>
                             <% nicknames.forEach(function (nname) { %>
                             <p>
-                                <%= nname %>
+                                <%= formatJapaneseName(nname) %>
                             </p>
                             <% }); %>
                         </div>
@@ -160,7 +160,7 @@
                             <span>Alias:</span>
                             <% aliases.forEach(function (alias) { %>
                             <p>
-                                <%= alias %>
+                                <%= formatJapaneseName(alias) %>
                             </p>
                             <% }); %>
                         </div>

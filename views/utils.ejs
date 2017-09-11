@@ -13,7 +13,7 @@ Array.prototype.select = function (selector) {
     return val;
 }
 
-function getAge (dateString) {
+getAge = function(dateString) {
     var today = new Date();
     var birthDate = new Date(dateString);
     var age = today.getFullYear() - birthDate.getFullYear();
@@ -24,6 +24,18 @@ function getAge (dateString) {
     }
 
     return age;
+}
+
+formatJapaneseName = function(name) {
+    if (name.hiragana && name.engname) {
+        return name.og + '(' + name.hiragana + ' / ' + name.engname + ')';
+    } else if (name.hiragana) {
+        return name.og + '(' + name.hiragana + ')';
+    } else if (name.engname) {
+        return name.og + '(' + name.engname + ')';
+    } else {
+        return name.og;
+    }
 }
 
 Numeric = {

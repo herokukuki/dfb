@@ -1,6 +1,6 @@
 'use strict';
 
-const { HumanInfo } = require('../types.js');
+const { HumanName, HumanInfo } = require('../types.js');
 const leech = require('../leech-promise.js');
 
 const NAME = 'javmodel';
@@ -36,18 +36,21 @@ function crawl (url) {
                         var ele = $('meta[name=Keywords]').attr('content');
                         ele = ele.split(',');
 
-                        info.name = ele[1].trim();
-                        info.transname = ele[0].trim();
+                        info.name = new HumanName({
+                            value: ele[1].trim(),
+                            type: 'ja',
+                            engname: ele[0].trim(),
+                        });
                         // ====================================================
 
                         // get photos =========================================
-                        ele = $('img[alt="' + info.transname + '"]').attr('src');
+                        ele = $('img[alt="' + info.name.en + '"]').attr('src');
                         info.photos.push(ele);
                         // ====================================================
 
                         // get birthday, bio, tags ============================
                         ele = $('h2.title-medium.br-bottom:contains("' + 
-                            info.transname + 
+                            info.name.en + 
                         '")').next().find('li');
 
                         var val = $(ele[0]).text();

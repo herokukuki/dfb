@@ -1,6 +1,6 @@
 'use strict';
 
-const { HumanInfo, SearchResult } = require('../types.js');
+const { HumanName, HumanInfo, SearchResult } = require('../types.js');
 const leech = require('../leech-promise.js');
 
 const NAME = 'minnano-av';
@@ -69,6 +69,50 @@ function isList($) {
     return $('table.tbllist.actress').length > 0;
 }
 
+function formatName(name, transname) {
+    if (!name) {
+        throw new Error('Argument invalid');
+    }
+
+    if (transname) {
+        // Case: transname has format: hiragana / engname
+        var p = transname.split('/');
+        var hiragana = p[0].trim();
+        var engname = p[1].trim();
+        
+        return new HumanName({
+            value: name,
+            type: 'ja',
+            hiragana: hiragana,
+            engname: engname
+        });
+    }
+    else {
+        // Case name has format: value （hiragana / engname）
+        if (name.indexOf('（') > 0) {
+            var p = name.split('（');
+            var name = p[0].trim();
+            
+            p = p[1].split('/');
+            var hiragana = p[0].trim();
+            var engname = p[1].trim();
+
+            return new HumanName({
+                value: p[0].trim(),
+                type: 'ja',
+                hiragana: hiragana,
+                engname: engname
+            });
+        } else {
+
+            return new HumanName({
+                value: name,
+                type: 'ja'
+            });
+        }
+    }
+}
+
 function formatInt(str) {
     if (!str) {
         return '';
@@ -116,8 +160,10 @@ function crawl(url) {
                             
                             info.photos.push(BASE_URL + p);
 
-                            info.name = $(eleRoot[1]).find('h2 > a').text();
-                            info.transname = $(eleRoot[1]).find('p').text();
+                            info.name = formatName(
+                                $(eleRoot[1]).find('h2 > a').text(),
+                                $(eleRoot[1]).find('p').text()
+                            );
 
                             result.results.push(info);
                         }
@@ -163,17 +209,19 @@ function crawl(url) {
 
                     ele = $('div.act-profile > table tr');
 
-                    // get name, transname, nicknames, alias ==================
+                    // get name, nicknames, alias =============================
                     val = $(ele[0]).find('td h2').text().split('（');
-                    info.name = val[0].trim();
-                    info.transname = 
-                        val[1].substring(0, val[1].length - 1).trim();
+                    
+                    info.name = formatName(
+                        val[0].trim(),
+                        val[1].substring(0, val[1].length - 1).trim()
+                    );
 
                     if ($(ele).find('span:contains("愛称")').length > 0) {
                         $(ele).find('span:contains("愛称")').each(
                             (idx, el) => {
                                 info.nicknames.push(
-                                    $(el.next).text().trim()
+                                    formatName($(el.next).text().trim())
                                 )
                             }
                         );
@@ -183,7 +231,7 @@ function crawl(url) {
                         $(ele).find('span:contains("別名")').each(
                             (idx, el) => {
                                 info.aliases.push(
-                                    $(el.next).text().trim()
+                                    formatName($(el.next).text().trim())
                                 )
                             }
                         );

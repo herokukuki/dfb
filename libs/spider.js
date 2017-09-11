@@ -43,7 +43,7 @@ function crawlHuman (crawler, url) {
     return crawler.crawl(url)
     .then(d => {
         if (d instanceof HumanInfo) {
-            var param = d.transname.split('/')[1].trim().split(' ');
+            var param = d.name.en.split(' ');
             
             var infoid = param[0];
             if (param.length > 1) {

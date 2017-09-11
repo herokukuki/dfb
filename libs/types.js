@@ -1,5 +1,30 @@
 'use strict';
 
+// HumanName: object for saving human name
+class HumanName {
+    constructor(opt) {
+        var op = {};
+        if (opt && typeof opt === 'object') {
+            op = opt;
+        }
+
+        this.value = opt.value || '';
+        this.type = opt.type || '';
+        this.hiragana = opt.hiragana || '';
+        this.engname = opt.engname || '';
+    }
+
+    get og() {
+        return this.value || '';
+    }
+
+    get en() {
+        return this.engname || '';
+    }
+}
+
+module.exports.HumanName = HumanName;
+
 // HumanInfo: object contain some infomation of human.
 class HumanInfo {
     constructor(opt) {
@@ -7,8 +32,7 @@ class HumanInfo {
         if (opt && typeof opt === 'object') {
             op = opt;
         }
-        this.name = op.name || '';
-        this.transname = op.transname || '';
+        this.name = op.name || {};
         this.nicknames = op.nicknames || [];
         this.aliases = op.aliases || [];
         this.birthday = op.birthday || '';
