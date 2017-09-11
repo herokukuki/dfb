@@ -28,11 +28,11 @@ getAge = function(dateString) {
 
 formatJapaneseName = function(name) {
     if (name.hiragana && name.engname) {
-        return name.og + '(' + name.hiragana + ' / ' + name.engname + ')';
+        return name.og + ' (' + name.hiragana + ' / ' + name.engname + ')';
     } else if (name.hiragana) {
-        return name.og + '(' + name.hiragana + ')';
+        return name.og + ' (' + name.hiragana + ')';
     } else if (name.engname) {
-        return name.og + '(' + name.engname + ')';
+        return name.og + ' (' + name.engname + ')';
     } else {
         return name.og;
     }

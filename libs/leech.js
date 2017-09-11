@@ -11,11 +11,10 @@ const cheerio = require('cheerio');
 const sanitize = require("sanitize-filename");
 
 const HEADERS = {
-    "User-Agent":                "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:55.0) Gecko/20100101 Firefox/55.0",
-    "Accept":                    "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language":           "en-US;q=0.5,en;q=0.3",
+    "User-Agent":                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36",
+    "Accept":                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+    "Accept-Language":           "en,vi;q=0.8",
     "Accept-Encoding":           "gzip, deflate",
-    "DNT":                       "1",
     "Connection":                "keep-alive",
     "Upgrade-Insecure-Requests": "1",
     "Pragma":                    "no-cache",

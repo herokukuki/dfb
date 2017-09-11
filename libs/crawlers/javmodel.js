@@ -16,83 +16,90 @@ module.exports.domain = function () {
 const BASE_URL = 'http://' + DOMAIN;
 
 function crawl (url) {
-    return new Promise(
-        (resolve, reject) => {
-            leech.request(url)
-            .then($ => {
-                try {
-                    if ($('div.text-404:contains("404")').length > 0) {
+    return new Promise((resolve, reject) => {
+        leech.request(url)
+        .then($ => {
+            try {
+                if ($('div.text-404:contains("404")').length > 0) {
+                    
+                    // Not found on server
+                    resolve(null);
+                } else {
+
+                    // Have record
+                    var info = new HumanInfo({
+                        url: url
+                    });
+
+                    // get name, transname ================================
+                    var ele = $('meta[name=Keywords]').attr('content');
+                    ele = ele.split(',');
+
+                    info.name = new HumanName({
+                        value: ele[1].trim(),
+                        type: 'ja',
+                        engname: ele[0].trim(),
+                    });
+                    // ====================================================
+
+                    // get photos =========================================
+                    ele = $('img[alt="' + info.name.en + '"]').attr('src');
+                    info.photos.push(ele);
+                    // ====================================================
+
+                    // get birthday, bio, tags ============================
+                    ele = $('h2.title-medium.br-bottom:contains("' + 
+                        info.name.en + 
+                    '")').next().find('li');
+
+                    var val = $(ele[0]).text();
+                    val = val.split(':')[1].trim().split('/');
+                    info.birthday = val[2] + '-' + val[0] + '-' + val[1];
+
+                    val = $(ele[1]).text().split(':')[1].trim();
+                    info.bio.blood = val;
+
+                    val = $(ele[2]).text().split(':')[1].trim();
+                    info.bio.bust = val.split(' ')[0];
+
+                    val = $(ele[3]).text().split(':')[1].trim();
+                    info.bio.waist = val.split(' ')[0];
+
+                    val = $(ele[4]).text().split(':')[1].trim();
+                    info.bio.hip = val.split(' ')[0];
+
+                    val = $(ele[5]).text().split(':')[1].trim();
+                    info.bio.tall = val.split(' ')[0];
+
+                    $(ele[6]).find('a').each((idx, el) => {
+                        var e = $(el);
+                        var tag = {
+                            text: e.text(),
+                            url: BASE_URL + e.attr('href')
+                        };
                         
-                        // Not found on server
-                        resolve(null);
-                    } else {
+                        info.tags.push(tag);
+                    });
+                    // ====================================================
 
-                        // Have record
-                        var info = new HumanInfo({
-                            url: url
-                        });
+                    info.rating = null;
 
-                        // get name, transname ================================
-                        var ele = $('meta[name=Keywords]').attr('content');
-                        ele = ele.split(',');
-
-                        info.name = new HumanName({
-                            value: ele[1].trim(),
-                            type: 'ja',
-                            engname: ele[0].trim(),
-                        });
-                        // ====================================================
-
-                        // get photos =========================================
-                        ele = $('img[alt="' + info.name.en + '"]').attr('src');
-                        info.photos.push(ele);
-                        // ====================================================
-
-                        // get birthday, bio, tags ============================
-                        ele = $('h2.title-medium.br-bottom:contains("' + 
-                            info.name.en + 
-                        '")').next().find('li');
-
-                        var val = $(ele[0]).text();
-                        val = val.split(':')[1].trim().split('/');
-                        info.birthday = val[2] + '-' + val[1] + '-' + val[0];
-
-                        val = $(ele[1]).text().split(':')[1].trim();
-                        info.bio.blood = val;
-
-                        val = $(ele[2]).text().split(':')[1].trim();
-                        info.bio.bust = val.split(' ')[0];
-
-                        val = $(ele[3]).text().split(':')[1].trim();
-                        info.bio.waist = val.split(' ')[0];
-
-                        val = $(ele[4]).text().split(':')[1].trim();
-                        info.bio.hip = val.split(' ')[0];
-
-                        val = $(ele[5]).text().split(':')[1].trim();
-                        info.bio.tall = val.split(' ')[0];
-
-                        $(ele[6]).find('a').each((idx, el) => {
-                            var e = $(el);
-                            var tag = {
-                                text: e.text(),
-                                url: BASE_URL + e.attr('href')
-                            };
-                            
-                            info.tags.push(tag);
-                        });
-                        // ====================================================
-
-                        info.rating = null;
-
-                        return resolve(info);
-                    }
-                } catch (err) {
-                    return reject(err);
+                    return resolve(info);
                 }
-            });
-        }
-    )
+            } catch (err) {
+                return reject(err);
+            }
+        })
+        .catch(err => {
+            var mss = err.message;
+            if (mss.indexOf('HTTP Code') > 0) {
+                console.log('<' + mss + '> at ' + url)
+                resolve(null);
+            } else {
+                reject(err);
+            }
+        })
+    });
 }
 
 module.exports.crawl = crawl;

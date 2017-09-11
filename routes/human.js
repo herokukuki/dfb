@@ -91,31 +91,41 @@ router.get('/search', function (req, res) {
             }
         })
         .catch(err => {
-            console.log(err);
+            console.error(err);
             res.status(500).end();
         });
     }
 });
 
 router.get('/:infoid', function (req, res) {
+    var asJson = req.query["json"];
+
     const type = 'human-id';
     var infoid = req.params['infoid'];
 
     var result = cache.get(type, infoid);
     if (result) {
-        res.status(200).render('human/details', result);
+        if (asJson) {
+            res.status(200).json(result);
+        } else {
+            res.status(200).render('human/details', result);
+        }
     } else {
         spider.crawl(type, infoid)
         .then(data => {
             if (data instanceof HumanInfo) {
                 cache.set(type, infoid, data);
-                res.status(200).render('human/details', data);
+                if (asJson) {
+                    res.status(200).json(data);
+                } else {
+                    res.status(200).render('human/details', data);
+                }
             } else {
                 res.status(404).end();
             }
         })
         .catch(err => {
-            console.log(err);
+            console.error(err);
             res.status(500).end();
         });
     }

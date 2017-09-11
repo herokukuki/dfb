@@ -30,37 +30,60 @@ function prepare(crawlerName, type, params) {
             url = SEARCH_TEMPLATE_URL[crawlerName]
             if (params["code"])
                 url = url.replace('{code}', encodeURIComponent(params["code"]));
+
+            return { crawler, url };
+
         case "id":
             url = ID_TEMPLATE_URL[crawlerName]
             if (params["code"])
                 url = url.replace('{code}', encodeURIComponent(params["code"]));
-    }
 
-    return { crawler, url };
+            return { crawler, url };
+    }
 }
 
 function crawlHuman (crawler, url) {
     return crawler.crawl(url)
     .then(d => {
         if (d instanceof HumanInfo) {
-            var param = d.name.en.split(' ');
-            
-            var infoid = param[0];
-            if (param.length > 1) {
-                infoid = param[1].trim() + '-' + param[0].trim();
-            }
-            infoid = infoid.toLowerCase();
+            let infoids = d.names.filter(name => name.en)
+            .map(name => {
+                let param = name.en.split(' ');
+                let infoid = param[0];
 
-            // get crawler
-            let { crawler, url } = prepare('javmodel', 'id', {
-                "code": encodeURIComponent(infoid)
+                if (param.length > 1) {
+                    infoid = param[1].trim() + '-' + param[0].trim();
+                }
+
+                infoid = infoid.toLowerCase();
+
+                return infoid;
             });
 
-            return crawler.crawl(url)
-            .then(dd => {
+            return Promise.all(
+                infoids.map(infoid => {
+                    let { crawler, url } = prepare('javmodel', 'id', {
+                        "code": infoid
+                    });
+
+                    console.log(url);
+                    return crawler.crawl(url);
+                })
+            ).then(results => {
+                console.log(results);
                 let info = clone(d);
 
-                if (dd != null) {
+                let names = info.names;
+                let birthday = info.birthday;
+                let matched = results.filter(
+                    res => 
+                        res != null && 
+                        res.birthday === birthday &&
+                        names.some(v => v.og === res.name.og)
+                );
+                
+                if (matched.length > 0) {
+                    let dd = matched[0];
                     if (dd.photos.length > 0) {
                         info.photos = dd.photos;
                     }
@@ -72,6 +95,8 @@ function crawlHuman (crawler, url) {
                 
                 return info;
             });
+        } else {
+            return d;
         }
     });
 }
@@ -81,7 +106,7 @@ function crawl (type, code) {
         case "human":
             // get crawler
             var { crawler, url } = prepare('minnano-av', 'search', {
-                "code": encodeURIComponent(code)
+                "code": code
             });
 
             return crawlHuman(crawler, url);
@@ -89,7 +114,7 @@ function crawl (type, code) {
         case "human-id":
             // get crawler
             var { crawler, url } = prepare('minnano-av', 'id', {
-                "code": encodeURIComponent(code)
+                "code": code
             });
 
             return crawlHuman(crawler, url);

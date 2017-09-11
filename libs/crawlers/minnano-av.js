@@ -90,15 +90,16 @@ function formatName(name, transname) {
     else {
         // Case name has format: value （hiragana / engname）
         if (name.indexOf('（') > 0) {
-            var p = name.split('（');
-            var name = p[0].trim();
+            var p1 = name.split('（');
+            var name = p1[0].trim();
             
-            p = p[1].split('/');
-            var hiragana = p[0].trim();
-            var engname = p[1].trim();
+            var p2 = p1[1].split('/');
+            var hiragana = p2[0].trim();
+            var engname = p2[1].trim();
+            engname = engname.substring(0, engname.length - 1);
 
             return new HumanName({
-                value: p[0].trim(),
+                value: name,
                 type: 'ja',
                 hiragana: hiragana,
                 engname: engname
@@ -309,7 +310,16 @@ function crawl(url) {
             } catch (err) {
                 return reject(err);
             }
-        });
+        })
+        .catch(err => {
+            var mss = err.message;
+            if (mss.indexOf('HTTP Code') > 0) {
+                console.log('<' + mss + '> at ' + url)
+                resolve(null);
+            } else {
+                reject(err);
+            }
+        })
     });
 }
 

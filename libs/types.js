@@ -1,5 +1,7 @@
 'use strict';
 
+const clone = require('clone');
+
 // HumanName: object for saving human name
 class HumanName {
     constructor(opt) {
@@ -56,6 +58,15 @@ class HumanInfo {
             total: op['rating.total'] || 0,
         };
         this.tags = op.tags || [];
+    }
+
+    get names() {
+        var result = [];
+        result.push(clone(this.name));
+        result = result.concat(clone(this.nicknames));
+        result = result.concat(clone(this.aliases));
+
+        return result;
     }
 }
 
