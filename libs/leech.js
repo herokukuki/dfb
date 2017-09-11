@@ -121,10 +121,6 @@ function doRequest (url, callback) {
 
         try {
             var $ = cheerio.load(data, { decodeEntities: false });
-
-            var log = require('./log.js');
-            log.writeToFile($.html());
-
             return callback(null, $);
         } catch (ex) {
             return callback(ex, null);
