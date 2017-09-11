@@ -13,7 +13,7 @@ router.get('/', function (req, res) {
         url: 'http://www.minnano-av.com/actress432853.html',
 
         photos: [
-            'http://www.minnano-av.com/p_actress_125_125/009/432853.jpg?new'
+            'http://cdn.javmodel.com/javdata/uploads/tsubomi150.jpg'
         ],
 
         name: 'つぼみ',
