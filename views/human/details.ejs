@@ -120,12 +120,14 @@
 
                     <div class="container">
 
+                        <% if (name.en) { %>
                         <div class="row my-value">
                             <span>Translated name:</span>
                             <p>
                                 <%= name.hiragana %> / <%= name.en %>
                             </p>
                         </div>
+                        <% } %>
 
                         <!--
                         <% nicknames.forEach(function (nname) { %>
