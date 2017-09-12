@@ -66,11 +66,9 @@ function crawlHuman (crawler, url) {
                         "code": infoid
                     });
 
-                    console.log(url);
                     return crawler.crawl(url);
                 })
             ).then(results => {
-                console.log(results);
                 let info = clone(d);
 
                 let names = info.names;
