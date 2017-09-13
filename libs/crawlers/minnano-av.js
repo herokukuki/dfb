@@ -128,7 +128,7 @@ function formatFloat(str) {
 
 function crawl(url) {
     return new Promise(function (resolve, reject) {
-        leech.request(url)
+        leech.get(url)
         .then($ => {
             try {
                 if (isList($)) {

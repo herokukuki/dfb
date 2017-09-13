@@ -2,10 +2,10 @@
 
 const leech = require('./leech.js');
 
-module.exports.request = function (url) {
+module.exports.get = function (url) {
     return new Promise(
         (resolve, reject) => {
-            leech.request(url,
+            leech.get(url,
                 (err, $) => {
                     if (err) return reject(err);
                     resolve($);
@@ -13,6 +13,18 @@ module.exports.request = function (url) {
         }
     )
 };
+
+module.exports.post = function (url, options) {
+    return new Promise(
+        (resolve, reject) => {
+            leech.post(url, options,
+                (err, $) => {
+                    if (err) return reject(err);
+                    resolve($);
+                })
+        }
+    )
+}
 
 module.exports.retrieve = function (url, location) {
     return new Promise(

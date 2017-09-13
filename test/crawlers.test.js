@@ -3,10 +3,13 @@
 const chai = require('chai');
 var expect = require('chai').expect;
 
-describe.only('crawlers/... test suite', function() {
+describe('crawlers/... test suite', function() {
+
+    // disable time-out
+    this.timeout(0);
 
     describe('crawlers.minnano-av test cases', function() {
-        const crawler = require('../libs/crawlers/minnano-av.js');
+        let crawler = require('../libs/crawlers/minnano-av.js');
 
         it('should return data', function() {
             
@@ -14,14 +17,14 @@ describe.only('crawlers/... test suite', function() {
             .then(data => {
                 expect(data).to.not.be.null;
                 if (data) {
-                    console.log(data);
+                    console.log(JSON.stringify(data));
                 }
             });
         })
     })
 
     describe('crawlers.javmodel test cases', function() {
-        const crawler = require('../libs/crawlers/javmodel.js');
+        let crawler = require('../libs/crawlers/javmodel.js');
         
         it('should return data', function() {
 
@@ -29,7 +32,22 @@ describe.only('crawlers/... test suite', function() {
             .then(data => {
                 expect(data).to.not.be.null;
                 if (data) {
-                    console.log(data);
+                    console.log(JSON.stringify(data));
+                }
+            });
+        })
+    })
+
+    describe('crawlers.wap test cases', function () {
+        let crawler = require('../libs/crawlers/wap.js');
+
+        it('should return data', function() {
+            
+            return crawler.crawl('http://warashi-asian-pornstars.fr/en/s-12/search', [ 'つぼみ' ])
+            .then(data => {
+                expect(data).to.not.be.null;
+                if (data) {
+                    console.log(JSON.stringify(data));
                 }
             });
         })

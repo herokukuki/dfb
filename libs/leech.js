@@ -4,11 +4,15 @@ const fs = require('fs');
 const path = require('path');
 const { parse } = require('url');
 
-const request = require('request');
+const httpRequest = require('request');
 const iconv = require('iconv-lite');
 const cheerio = require('cheerio');
 
 const sanitize = require("sanitize-filename");
+
+const GET = 'GET';
+
+const POST = 'POST';
 
 const HEADERS = {
     "User-Agent":                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36",
@@ -40,20 +44,6 @@ function formatFilename (filename) {
     });
 }
 
-function makeRequest (url) {
-
-    var info = {
-        url: url,
-        headers: HEADERS
-    };
-
-    if (PROXY !== "" && typeof PROXY == 'string') {
-        info.proxy = PROXY;
-    }
-
-    return info
-}
-
 function enableProxy (proxyURL) {
 
     if (typeof proxyURL === 'string' && proxyURL != '') {
@@ -71,26 +61,41 @@ module.exports.config = {};
 module.exports.config.enableProxy = enableProxy;
 module.exports.config.disableProxy = disableProxy;
 
-function doRequest (url, callback) {
+function prepare (args) {
+    let reqObj = {
+        headers: HEADERS
+    };
 
-    var requestOpt = makeRequest(url);
-    requestOpt.encoding = null;
+    if (PROXY !== "" && typeof PROXY == 'string') {
+        reqObj.proxy = PROXY;
+    }
 
-    request(requestOpt, (err, res, body) => {
+    for (let key in args) {
+        reqObj[key] = args[key];
+    }
 
-        if (!callback) {
-            callback = (err, $) => {
-                if (err) throw err;
-                return $;
-            }
-        }
+    return reqObj;
+}
 
+function request (args, callback) {
+
+    let fn = (err, data) => {
+        if (err) throw err;
+        return data;
+    }
+
+    if (callback) {
+        fn = callback;
+    }
+
+    httpRequest(args, (err, res, body) => {
+        
         if (err) {
-            return callback(err, null);
+            return fn(err, null);
         }
 
         if (res.statusCode !== 200) {
-            return callback(new Error("HTTP Code " + res.statusCode), null);
+            return fn(new Error("HTTP Code " + res.statusCode), null);
         }
 
         var charset = (function getCharSet(contentType) {
@@ -118,17 +123,85 @@ function doRequest (url, callback) {
             }
         }
 
-        try {
-            var $ = cheerio.load(data, { decodeEntities: false });
-            return callback(null, $);
-        } catch (ex) {
-            return callback(ex, null);
-        }
-        
+        fn(null, data);        
     })
 }
 
-module.exports.request = doRequest;
+function get (url, callback) {
+
+    let args = prepare({
+        url: url,
+        method: GET,
+        encoding: null
+    });
+
+    let fn = (err, data) => {
+        if (err) throw err;
+        return data;
+    }
+
+    if (callback) {
+        fn = callback;
+    }
+
+    request(args, (err, data) => {
+        
+        if (err) {
+            return fn(err, null);
+        }
+
+        try {
+            var $ = cheerio.load(data, { decodeEntities: false });
+            return fn(null, $);
+        } catch (ex) {
+            return fn(ex, null);
+        }
+    })
+}
+
+module.exports.get = get;
+
+function post (url, options, callback) {
+
+    let bdObj = {};
+    bdObj.json = options.json || false;
+    bdObj.form = options.form || {};
+    bdObj.body = options.body || {};
+
+    let args = prepare({
+        url: url,
+        method: POST,
+        encoding: null,
+        json: bdObj.json,
+        form: bdObj.form,
+        body: bdObj.body,
+    });
+
+    let fn = (err, data) => {
+        if (err) throw err;
+        return data;
+    }
+
+    if (callback) {
+        fn = callback;
+    }
+
+    request(args, (err, data) => {
+        
+        if (err) {
+            return fn(err, null);
+        }
+
+        try {
+            var $ = cheerio.load(data, { decodeEntities: false });
+            return fn(null, $);
+        } catch (ex) {
+            return fn(ex, null);
+        }
+    })
+}
+
+module.exports.post = post;
 
 function retrieve (url, location, callback) {
     
@@ -155,7 +228,7 @@ function retrieve (url, location, callback) {
                     
                     var requestOpt = makeRequest(url);
         
-                    request(requestOpt)
+                    httpRequest(requestOpt)
                         .pipe(fs.createWriteStream(filepath))
                         .on('finish', () => callback(null))
                         .on('error', err => callback(err));

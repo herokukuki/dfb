@@ -3,7 +3,7 @@
 const path = require('path');
 const clone = require('clone');
 
-const { HumanInfo } = require('../libs/types.js');
+const { HumanInfo, SearchResult } = require('../libs/types.js');
 
 const CRAWLERS = {
     "minnano-av": require('./crawlers/minnano-av.js'),
@@ -11,8 +11,16 @@ const CRAWLERS = {
     "javmodel": require('./crawlers/javmodel.js'),
 }
 
-const SEARCH_TEMPLATE_URL = {
-    "minnano-av": "http://www.minnano-av.com/search_result.php?search_scope=actress&search_word={code}",
+const SEARCH_TEMPLATE = {
+    "minnano-av": {
+        url: "http://www.minnano-av.com/search_result.php?search_scope=actress&search_word={code}",
+        form: false
+    },
+
+    "wap": {
+        url: "http://warashi-asian-pornstars.fr/en/s-12/search",
+        form: true
+    },
 }
 
 const ID_TEMPLATE_URL = {
@@ -27,11 +35,22 @@ function prepare(crawlerName, type, params) {
 
     switch(type) {
         case "search":
-            url = SEARCH_TEMPLATE_URL[crawlerName]
-            if (params["code"])
-                url = url.replace('{code}', encodeURIComponent(params["code"]));
+            let tpl = SEARCH_TEMPLATE[crawlerName]
+            url = tpl.url;
 
-            return { crawler, url };
+            if (tpl.form) {
+                let formdata = [];
+                if (params["code"])
+                    formdata.push(params["code"]);
+
+                return { crawler, url, formdata };
+            } else {
+                if (params["code"])
+                    url = url.replace('{code}', encodeURIComponent(params["code"]));
+
+                return { crawler, url };
+            }
+            break;
 
         case "id":
             url = ID_TEMPLATE_URL[crawlerName]
@@ -93,6 +112,9 @@ function crawlHuman (crawler, url) {
                 
                 return info;
             });
+        } else if (d instanceof SearchResult) {
+            // End of the road, I want to get some images of the people but I can't.
+            return d;
         } else {
             return d;
         }

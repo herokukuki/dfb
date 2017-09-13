@@ -17,7 +17,7 @@ const BASE_URL = 'http://' + DOMAIN;
 
 function crawl (url) {
     return new Promise((resolve, reject) => {
-        leech.request(url)
+        leech.get(url)
         .then($ => {
             try {
                 if ($('div.text-404:contains("404")').length > 0) {
