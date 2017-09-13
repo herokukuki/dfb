@@ -89,10 +89,11 @@ function formatName(name, transname) {
     }
     else {
         // Case name has format: value （hiragana / engname）
-        if (name.indexOf('（') > 0) {
-            var p1 = name.split('（');
+        if (name.indexOf(' （') > 0) {
+            var p1 = name.split(' （');
             var name = p1[0].trim();
-            
+            console.log(p1[1]);
+
             var p2 = p1[1].split('/');
             var hiragana = p2[0].trim();
             var engname = p2[1].trim();
