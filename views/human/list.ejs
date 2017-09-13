@@ -27,6 +27,11 @@
             <hr />
         </div>
 
+        <% if (results.length === 0) { %>
+        <div class="row not-found" name="404">
+            <p>Nothing Here!</p>
+        </div>
+        <% } else { %>
         <div class="row">
             <div class="col m12 s12 l12">
                 <table class="bordered striped">
@@ -63,13 +68,14 @@
             </div>
         </div>
 
-        <% if (more) { %>
-            <div class="row more-btn">
-                <a class="waves-effect waves-light blue lighten-1 btn" 
-                    href="javascript:void(0)" onclick="openLink('<%= url %>')">
-                    More
-                </a>
-            </div>
+            <% if (more) { %>
+        <div class="row more-btn">
+            <a class="waves-effect waves-light blue lighten-1 btn" 
+                href="javascript:void(0)" onclick="openLink('<%= url %>')">
+                More
+            </a>
+        </div>
+            <% }; %>
         <% }; %>
         
     </div>
