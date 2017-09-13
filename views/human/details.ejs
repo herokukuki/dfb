@@ -127,25 +127,33 @@
                                 <%= name.hiragana %> / <%= name.en %>
                             </p>
                         </div>
-                        <% } %>
+                        <% }; %>
 
+                        <% if (nicknames.length > 0) { %>
                         <div class="row my-value">
                             <span>Nickname:</span>
-                            <% nicknames.forEach(function (nname) { %>
-                            <p>
-                                <%= formatJapaneseName(nname) %>
-                            </p>
-                            <% }); %>
+                            <ul>
+                                <% nicknames.forEach(function (nname) { %>
+                                <li>
+                                    <%= formatJapaneseName(nname) %>
+                                </li>
+                                <% }); %>
+                            </ul>
                         </div>
+                        <% }; %>
 
+                        <% if (aliases.length > 0) { %>
                         <div class="row my-value">
                             <span>Alias:</span>
-                            <% aliases.forEach(function (alias) { %>
-                            <p>
-                                <%= formatJapaneseName(alias) %>
-                            </p>
-                            <% }); %>
+                            <ul>
+                                <% aliases.forEach(function (alias) { %>
+                                <li>
+                                    <%= formatJapaneseName(alias) %>
+                                </li>
+                                <% }); %>
+                            </ul>
                         </div>
+                        <% }; %>
 
                         <div class="row my-value">
                             <span>Birthday:</span>

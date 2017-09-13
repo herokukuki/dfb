@@ -16,3 +16,11 @@ thead {
 .b {
     font-weight: bold;
 }
+
+li {
+    margin: 5px auto;
+}
+
+    li:hover {
+        background-color: #f5f5f5;
+    }
