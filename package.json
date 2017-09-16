@@ -8,10 +8,10 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "cross-env NODE_ENV=production node index.js",
     "test": "mocha",
     "debug": "mocha debug",
-    "nodemon": "nodemon index.js"
+    "nodemon": "cross-env NODE_ENV=development nodemon index.js"
   },
   "keywords": [
     "leech",
@@ -27,6 +27,7 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "clone": "^2.1.1",
+    "cross-env": "^5.0.5",
     "ejs-locals": "^1.0.2",
     "express": "^4.14.0",
     "iconv-lite": "^0.4.18",
