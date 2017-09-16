@@ -8,9 +8,10 @@
   },
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "mocha",
-    "start": "nodemon index.js",
-    "debug": "mocha debug"
+    "debug": "mocha debug",
+    "nodemon": "nodemon index.js"
   },
   "keywords": [
     "leech",
