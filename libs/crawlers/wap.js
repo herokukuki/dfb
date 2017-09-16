@@ -1,6 +1,6 @@
 'use strict';
 
-const { HumanName, HumanInfo, SearchResult } = require('../types.js');
+const { HumanName, HumanInfo, SearchResult } = require('../../models/types.js');
 const leech = require('../leech-promise.js');
 
 const NAME = 'wap';
@@ -106,7 +106,7 @@ function crawl (url, formdata) {
             })
             .catch(err => {
                 var mss = err.message;
-                if (mss.indexOf('HTTP Code') > 0) {
+                if (mss.indexOf('HTTP Code') >= 0) {
                     console.log('<' + mss + '> at ' + url)
                     resolve(null);
                 } else {

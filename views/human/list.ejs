@@ -11,12 +11,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
     <link rel="stylesheet" href="/assets/styles/default.css">
     <link rel="stylesheet" href="/assets/styles/human.list.css">
-    <script type="text/javascript">
-        function openLink(url) {
-            var newtab = window.open(url, '_blank');
-            newtab.focus();
-        }
-    </script>
 </head>
 
 <body>
@@ -31,7 +25,9 @@
         <div class="row not-found" name="404">
             <p>Nothing Here!</p>
         </div>
-        <% } else { %>
+        <% } %>
+
+        <% if (results.length > 0) { %>
         <div class="row">
             <div class="col m12 s12 l12">
                 <table class="bordered striped">
@@ -56,7 +52,7 @@
                                     <p class="url">
                                         <a href="javascript:void(0)" 
                                             onclick="openLink('<%= result.url %>')">
-                                            minnano-av.com
+                                            www.minnano-av.com
                                         </a>
                                     </p>
                                 </div>
@@ -83,6 +79,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script src="/assets/scripts/base.js"></script>
 </body>
 
 </html>

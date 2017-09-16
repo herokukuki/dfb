@@ -87,3 +87,49 @@ class SearchResult {
 }
 
 module.exports.SearchResult = SearchResult;
+
+// MovieInfo contains some infomation about movie
+class MovieInfo {
+    constructor(opt) {
+        var op = {};
+        if (opt && typeof opt === 'object') {
+            op = opt;
+        }
+        this.title = op.title || '';
+        this.origtitle = op.origtitle || '';
+        this.transtitle = op.transtitle || '';
+        this.aka = op.aka || [];
+        this.releasedate = op.releasedate || '';
+        this.year = op.year || '';
+        this.genres = op.genres || [];
+        this.tags = op.tags || [];
+        this.actors = op.actors || [];
+        this.director = op.director || null;
+        this.rating = op.rating || 0;
+        this.posters = op.posters || [];
+        this.screenshots = op.screenshots || [];
+        this.covers = op.covers || [];
+        this.url = op.url || '';
+
+        this.country = op.country || '';
+        this.origlang = op.origlang || '';
+        
+        this.series = op.series || null;
+
+        // studio or something
+        this.maker = op.maker || null;
+
+        // for jav
+        this.label = op.label || null;
+
+        this.description = op.description || '';
+
+        // imdb
+        this.tagline = op.tagline || '';
+
+        // duration in minutes - numeric
+        this.duration = op.duration || '';
+    }
+}
+
+module.exports.MovieInfo = MovieInfo;

@@ -3,7 +3,7 @@
 const chai = require('chai');
 const assert = chai.assert;
 
-const types = require('../libs/types.js');
+const types = require('../models/types.js');
 
 describe('types.js test suite', function() {
 

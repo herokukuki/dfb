@@ -18,10 +18,12 @@ app.use(express.static(path.join(__dirname, 'statics')));
 const PORT = 3000;
 
 const humanRoute = require('./routes/human.js');
+const movieRoute = require('./routes/movie.js');
 
 // ========================================================
 
 app.use('/human', humanRoute);
+app.use('/movie', movieRoute);
 
 app.use(function (err, req, res, next) {
     console.log(err);

@@ -1,7 +1,7 @@
 'use strict';
 
 const spider = require('../libs/spider.js');
-const { HumanName, HumanInfo, SearchResult } = require('../libs/types.js');
+const { HumanName, HumanInfo, SearchResult } = require('../models/types.js');
 const cache = require('../config/cache.js');
 
 const express = require('express');

@@ -1,0 +1,168 @@
+<% include ../utils %>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <meta name="keywords" content="<%= actors.map(v => v.text).concat(genres.map(v => v.text)).join() %>">
+    <meta name="title" content="<%= title %>">
+    <meta name="transtitle" content="<%= transtitle %>">
+    <meta name="maker" content="<%= maker %>">
+    <meta name="reference" content="<%= url %>">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="/assets/styles/reset.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/styles/default.css">
+    <link rel="stylesheet" href="/assets/styles/movie.details.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="row">
+            <h4 class="title"><%= title.toUpperCase() %></h4>
+        </div>
+
+        <div class="row">
+            <img class="materialboxed z-depth-5" src="<%= posters[0] %>" />
+        </div>
+
+        <div class="row">
+            <div class="col s12 m12 l10 offset-l1">
+                <dl>
+                    <dt>Original Title:</dt>
+                    <dd><%= origtitle %></dd>
+                </dl>
+
+                <dl>
+                    <dt>Translated Title:</dt>
+                    <dd><%= transtitle %></dd>
+                </dl>
+
+                <dl>
+                    <dt>Release Date:</dt>
+                    <dd><%= releasedate %></dd>
+
+                    <dt itemprop="year">Year:</dt>
+                    <dd><%= year %></dd>
+                </dl>
+
+                <% if (director) { %>
+                <dl>
+                    <dt>Director:</dt>
+                    <dd>
+                        <a href="javascipt:void(0)" onClick="openLink('<%= director.url %>')"><%= director.text %></a>
+                    </dd>
+                </dl>
+                <% } %>
+
+                <dl>
+                    <dt>Actors:</dt>
+                    <dd>
+                        <% actors.forEach(actor => { %>
+                        <div class="chip">
+                            <a href="javascipt:void(0)" onClick="openLink('<%= actor.url %>')"><%= actor.text %></a>
+                        </div>
+                        <% }) %>
+                    </dd>
+                </dl>
+
+                <% if (label) { %>
+                <dl>
+                    <dt>Label:</dt>
+                    <dd>
+                        <a href="javascipt:void(0)" onClick="openLink('<%= label.url %>')"><%= label.text %></a>
+                    </dd>
+                </dl>
+                <% } %>
+
+                <% if (series) { %>
+                <dl>
+                    <dt>Series:</dt>
+                    <dd>
+                        <a href="javascipt:void(0)" onClick="openLink('<%= series.url %>')"><%= series.text %></a>
+                    </dd>
+                </dl>
+                <% } %>
+
+                <dl>
+                    <dt>Maker:</dt>
+                    <dd><p class="maker"><%= maker %></p></dd>
+                </dl>
+
+                <% if (genres.length > 0) { %>
+                <dl>
+                    <dt>Genres:</dt>
+                    <dd>
+                        <% genres.forEach(genre => { %>
+                        <div class="chip">
+                            <a href="javascipt:void(0)" onClick="openLink('<%= genre.url %>')"><%= genre.text %></a>
+                        </div>
+                        <% }) %>
+                    </dd>
+                </dl>
+                <% } %>
+
+                <% if (tags.length > 0) { %>
+                <dl>
+                    <dt>Tags:</dt>
+                    <dd>
+                        <% tags.forEach(tag => { %>
+                        <div class="chip">
+                            <a href="javascipt:void(0)" onClick="openLink('<%= tag.url %>')"><%= tag.text %></a>
+                        </div>
+                        <% }) %>
+                    </dd>
+                </dl>
+                <% } %>
+
+                <dl>
+                    <dt>Duration:</dt>
+                    <dd><%= parseInt(duration) %> min(s)</dd>
+                </dl>
+
+                <% if (rating) { %>
+                <dl>
+                    <dt>Rating:</dt>
+                    <dd>
+                        <p><i class="icons material-icons">grade</i><span><%= rating %></span></p>
+                    </dd>
+                </dl>
+                <% } %>
+
+                <dl>
+                    <dt>URL:</dt>
+                    <dd><a href="javascipt:void(0)" class="truncate" onClick="openLink('<%= url %>')"><%= url %></a></dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="row" itemprop="description">
+            <%- description.split('\r\n').map(v => '<p>' + v + '</p>').join(' ') %>
+        </div>
+
+        <% if (screenshots.length > 0) { %>
+        <div class="row" itemprop="screenshots">
+            <p>Screenshots</p>
+            <hr />
+            <div>
+                <% screenshots.forEach(ss => { %>
+                <div class="materialboxed-placeholder">
+                    <img class="materialboxed z-depth-2" src="<%= ss %>" />
+                </div>
+                <% }) %>
+            </div>
+        </div>
+        <% } %>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script src="/assets/scripts/base.js"></script>
+</body>
+
+</html>

@@ -3,13 +3,22 @@
 const path = require('path');
 const clone = require('clone');
 
-const { HumanInfo, SearchResult } = require('../libs/types.js');
+const { HumanInfo, SearchResult } = require('../models/types.js');
 
-const CRAWLERS = {
-    "minnano-av": require('./crawlers/minnano-av.js'),
+const CRAWLERS = { };
 
-    "javmodel": require('./crawlers/javmodel.js'),
+function registerCrawler (modulePath) {
+    let mdl = require(modulePath);
+    let mdlName = mdl.name();
+    CRAWLERS[mdlName] = mdl;
 }
+
+registerCrawler('./crawlers/minnano-av.js');
+registerCrawler('./crawlers/javmodel.js');
+registerCrawler('./crawlers/caribbean.js');
+registerCrawler('./crawlers/caribbean-en1.js');
+registerCrawler('./crawlers/caribbean-en2.js');
+registerCrawler('./crawlers/1pondo.js');
 
 const SEARCH_TEMPLATE = {
     "minnano-av": {
@@ -27,6 +36,14 @@ const ID_TEMPLATE_URL = {
     "minnano-av": "http://www.minnano-av.com/{code}",
 
     "javmodel": "http://javmodel.com/jav/{code}/",
+
+    "caribbean": "https://www.caribbeancom.com/moviepages/{code}/index.html",
+
+    "caribbean-en1": "https://www.caribbeancom.com/eng/moviepages/{code}/index.html",
+
+    "caribbean-en2": "https://en.caribbeancom.com/eng/moviepages/{code}/index.html",
+
+    "1pondo": "http://www.1pondo.tv/dyn/ren/movie_details/movie_id/{code}.json",
 }
 
 function prepare(crawlerName, type, params) {
@@ -61,6 +78,7 @@ function prepare(crawlerName, type, params) {
     }
 }
 
+// HUMAN CRAWLER ==============================================================
 function crawlHuman (crawler, url) {
     return crawler.crawl(url)
     .then(d => {
@@ -120,6 +138,87 @@ function crawlHuman (crawler, url) {
         }
     });
 }
+// ============================================================================
+
+// MOVIE CRAWLER ==============================================================
+function crawlCaribbean (code) {
+    let { "crawler": crawler1, "url": url1 } = prepare('caribbean', 'id', {
+        "code": code
+    });
+    
+
+    let { "crawler": crawler2, "url": url2 } = prepare('caribbean-en1', 'id', {
+        "code": code
+    });
+
+    let { "crawler": crawler3, "url": url3 } = prepare('caribbean-en2', 'id', {
+        "code": code
+    });
+
+    return Promise.all([
+        crawler1.crawl(url1),
+        crawler2.crawl(url2),
+        crawler3.crawl(url3),
+    ])
+    .then(data => {
+        let d1 = data[0];
+        let d2 = data[1];
+        let d3 = data[2];
+
+        if (d1 == null) {
+            return null;
+        } else {
+            let d = clone(d1);
+            if (d2.transtitle) d.transtitle = d2.transtitle;
+            if (d2.genres.length > 0) d.genres = d2.genres;
+            if (d3.description) d.description = d3.description;
+
+            return d;
+        }
+    })
+}
+
+function crawlMovie (crawler, type, code) {
+    code = code.toLowerCase();
+    let name = crawler.name();
+    if (name === 'caribbean') {
+        let movieid = code.split(' ')[1].trim();
+        return crawlCaribbean(movieid);
+    } else if (name === '1pondo') {
+        let movieid = code.split(' ')[1].trim();
+        let { _, url } = prepare(name, 'id', {
+            "code": movieid
+        });
+        return crawler.crawl(url);
+    } else {
+        let { _, url } = prepare(name, type, {
+            "code": code
+        });
+        return crawler.crawl(url);
+    }
+}
+
+function findMovieCrawler (code) {
+    code = code.toLowerCase();
+    if (code.indexOf(' ') > 0) {
+        // format source mov-id
+        let pos = code.indexOf(' ');
+        let maker = code.substring(0, pos).trim();
+        let id = code.substring(pos).trim();
+
+        if (maker.indexOf('caribbean') >= 0) {
+            return CRAWLERS["caribbean"];
+        } else if (maker.indexOf('1pondo') >= 0) {
+            return CRAWLERS["1pondo"];
+        } else {
+            return null;
+        }
+    } else {
+        // format mov-id
+        return null;
+    }
+}
+// ============================================================================
 
 function crawl (type, code) {
     switch (type) {
@@ -138,6 +237,10 @@ function crawl (type, code) {
             });
 
             return crawlHuman(crawler, url);
+
+        case "movie":
+            var crawler = findMovieCrawler(code);
+            return crawlMovie(crawler, 'search', code);
         
         default:
             throw new Error('No crawler has found!');

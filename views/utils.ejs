@@ -1,18 +1,4 @@
 <%
-Array.prototype.select = function (selector) {
-    if (!selector) {
-        return this;
-    }
-
-    var val = [];
-
-    this.forEach(function (ele) {
-        val.push(selector(ele));
-    });
-
-    return val;
-}
-
 getAge = function(dateString) {
     var today = new Date();
     var birthDate = new Date(dateString);

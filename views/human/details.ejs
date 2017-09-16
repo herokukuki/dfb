@@ -6,11 +6,12 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="Content-Style-Type" content="text/css">
-    <meta name="keywords" content="<%= name.og + ',' + tags.select(function(t){return t.text}).join() %>">
+    <meta name="keywords" content="<%= [name.og].concat(tags.map(v => v.text)).join() %>">
     <meta name="name" content="<%= name.og %>">
     <meta name="transname" content="<%= name.en %>">
     <meta name="birthday" content="<%= birthday %>">
     <meta name="birthplace" content="<%= birthplace %>">
+    <meta name="reference" content="<%= url %>">
     <title>
         <%= formatJapaneseName(name) %>
     </title>
@@ -19,12 +20,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
     <link rel="stylesheet" href="/assets/styles/default.css">
     <link rel="stylesheet" href="/assets/styles/human.details.css">
-    <script type="text/javascript">
-        function openLink(url) {
-            var newtab = window.open(url, '_blank');
-            newtab.focus();
-        }
-    </script>
 </head>
 
 <body>
@@ -249,6 +244,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script src="/assets/scripts/base.js"></script>
 </body>
 
 </html>
