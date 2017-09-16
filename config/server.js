@@ -32,12 +32,12 @@ app.use(function (err, req, res, next) {
 
 // Config for development =====================================================
 if ( app.get('env') === 'development' ) {
-    app.set('port', 3000);
+    app.set('port', (process.env.PORT || 3000));
 }
 
 // Config for development =====================================================
 if ( app.get('env') === 'production' ) {
-    app.set('port', 80);
+    app.set('port', (process.env.PORT || 80));
 }
 
 module.exports = app;
