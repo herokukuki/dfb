@@ -3,9 +3,9 @@
 const clone = require('clone');
 const { HumanInfo, SearchResult } = require('../models/types.js');
 const crawlers = require('./crawlers');
-const spiders = {
-
-    "minnano-av": {
+const spiders = [
+    {
+        "name": "minnano-av",
         "target": "human",
         "crawl": function (opt) {
             let crawler = crawlers["minnano-av"];
@@ -69,7 +69,8 @@ const spiders = {
         }
     },
 
-    "caribbeancom": {
+    {
+        "name": "caribbeancom",
         "target": "movie",
         "crawl": function (opt) {
             let crawler1 = crawlers["caribbeancom"];
@@ -99,7 +100,7 @@ const spiders = {
             });
         }
     },
-}
+]
 
 function findCrawlers (selector) {
     let result = [];
@@ -123,9 +124,8 @@ function firstCrawler (selector) {
 
 function findSpiders (selector) {
     let result = [];
-    for (var name in spiders) {
-        let spider = spiders[name];
-        if (selector({ "name": name, "o": spider })) {
+    for (var spider of spiders) {
+        if (selector(spider)) {
             result.push(spider);
         }
     }
@@ -159,7 +159,7 @@ function summon (target, qtext) {
             let spider = firstSpider(
                 v => 
                     v.name.indexOf(name) > -1 && 
-                    v.o.target == target);
+                    v.target == target);
 
             if (spider) {
                 return [ spider, id ];
