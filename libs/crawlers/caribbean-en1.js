@@ -8,6 +8,11 @@ module.exports.name = function () {
     return NAME;
 }
 
+const TEMPLATE = {
+    "search": "",
+    "id": "https://www.caribbeancom.com/eng/moviepages/{qtext}/index.html",
+}
+
 const DOMAIN = 'www.caribbeancom.com';
 module.exports.domain = function () {
     return DOMAIN;
@@ -43,7 +48,23 @@ function formatRating (val) {
     return parseInt(s) / 10;
 }
 
-function crawl (url) {
+function crawl (opt) {
+    let url = "";
+    if (typeof opt == 'string') {
+        url = opt;
+    }
+
+    if (typeof opt == 'object') {
+        let qtext = opt.qtext || '';
+        if (qtext) {
+            url = TEMPLATE["id"].replace('{qtext}', qtext);
+        }
+    }
+
+    if (url == "") {
+        throw new Error("Invalid Arguments");
+    }
+
     return new Promise((resolve, reject) => {
         return leech.get(url)
         .then($ => {

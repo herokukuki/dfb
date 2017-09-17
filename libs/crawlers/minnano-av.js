@@ -8,6 +8,11 @@ module.exports.name = function () {
     return NAME;
 }
 
+const TEMPLATE = {
+    "search": "http://www.minnano-av.com/search_result.php?search_scope=actress&search_word={qtext}",
+    "id": "http://www.minnano-av.com/{qtext}",
+}
+
 const DOMAIN = 'www.minnano-av.com';
 module.exports.domain = function () {
     return DOMAIN;
@@ -126,7 +131,24 @@ function formatFloat(str) {
     } else return parseFloat(str);
 }
 
-function crawl(url) {
+function crawl (opt) {
+    let url = "";
+    if (typeof opt == 'string') {
+        url = opt;
+    }
+
+    if (typeof opt == 'object') {
+        let type = opt.type || '';
+        let qtext = opt.qtext || '';
+        if (type && qtext) {
+            url = TEMPLATE[type].replace('{qtext}', encodeURIComponent(qtext));
+        }
+    }
+
+    if (url == "") {
+        throw new Error("Invalid Arguments");
+    }
+
     return new Promise(function (resolve, reject) {
         leech.get(url)
         .then($ => {

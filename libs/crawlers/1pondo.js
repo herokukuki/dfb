@@ -8,6 +8,11 @@ module.exports.name = function () {
     return NAME;
 }
 
+const TEMPLATE = {
+    "search": "",
+    "id": "http://www.1pondo.tv/dyn/ren/movie_details/movie_id/{qtext}.json",
+}
+
 const DOMAIN = 'www.1pondo.tv';
 module.exports.domain = function () {
     return DOMAIN;
@@ -15,7 +20,23 @@ module.exports.domain = function () {
 
 const BASE_URL = 'https://' + DOMAIN;
 
-function crawl (url) {
+function crawl (opt) {
+    let url = "";
+    if (typeof opt == 'string') {
+        url = opt;
+    }
+
+    if (typeof opt == 'object') {
+        let qtext = opt.qtext || '';
+        if (qtext) {
+            url = TEMPLATE["id"].replace('{qtext}', qtext);
+        }
+    }
+
+    if (url == "") {
+        throw new Error("Invalid Arguments");
+    }
+
     return new Promise((resolve, reject) => {
         leech.get(url)
         .then($ => {

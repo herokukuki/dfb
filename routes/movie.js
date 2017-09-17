@@ -1,6 +1,6 @@
 'use strict';
 
-const spider = require('../libs/spider.js');
+const SpiderQueen = require('../libs/spider-queen.js');
 const { MovieInfo, SearchResult } = require('../models/types.js');
 const cache = require('../config/cache.js');
 
@@ -75,7 +75,10 @@ router.get('/search', (req, res) => {
     const type = 'movie';
     let query = req.query['q'];
 
-    spider.crawl(type, query)
+    SpiderQueen.crawl(query, {
+        target: 'movie',
+        type: 'search'
+    })
     .then(data => {
         if (data instanceof MovieInfo) {
             res.render('movie/details', data);

@@ -8,6 +8,11 @@ module.exports.name = function () {
     return NAME;
 }
 
+const TEMPLATE = {
+    "search": "http://warashi-asian-pornstars.fr/en/s-12/search",
+    "id": "",
+}
+
 const DOMAIN = 'warashi-asian-pornstars.fr';
 module.exports.domain = function () {
     return DOMAIN;
@@ -33,7 +38,23 @@ function formatName (value) {
     }
 }
 
-function crawl (url, formdata) {
+function crawl (opt) {
+    let url = TEMPLATE["search"];
+    let formdata = "";
+    if (typeof opt == 'string') {
+        formdata = opt;
+    }
+
+    if (typeof opt == 'object') {
+        let qtext = opt.qtext || '';
+        if (qtext) {
+            formdata = qtext;
+        }
+    }
+
+    if (formdata == "") {
+        throw new Error("Invalid Arguments");
+    }
 
     if (formdata) {
         // POST

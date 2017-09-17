@@ -1,6 +1,6 @@
 'use strict';
 
-const spider = require('../libs/spider.js');
+const SpiderQueen = require('../libs/spider-queen.js');
 const { HumanName, HumanInfo, SearchResult } = require('../models/types.js');
 const cache = require('../config/cache.js');
 
@@ -76,7 +76,10 @@ router.get('/search', function (req, res) {
     if (result) {
         res.status(200).render('human/details', result);
     } else {
-        spider.crawl(type, query)
+        SpiderQueen.crawl(query, {
+            target: 'human',
+            type: 'search'
+        })
         .then(data => {
             if (data instanceof SearchResult) {
                 for (var info of data.results) {
@@ -111,7 +114,10 @@ router.get('/:infoid', function (req, res) {
     if (result) {
         res.status(200).render('human/details', result);
     } else {
-        spider.crawl(type, infoid)
+        SpiderQueen.crawl(infoid, {
+            target: 'human',
+            type: 'id'
+        })
         .then(data => {
             if (data instanceof HumanInfo) {
                 cache.set(type, infoid, data);
