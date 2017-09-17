@@ -100,6 +100,36 @@ const spiders = [
             });
         }
     },
+
+    {
+        "name": "heyzo",
+        "type": "movie",
+        "crawl": function (opt) {
+            let crawler1 = crawlers['heyzo'];
+            let crawler2 = crawlers['heyzo-en'];
+
+            return Promise.all([
+                crawler1.crawl(opt),
+                crawler2.crawl(opt),
+            ])
+            .then(data => {
+                let d1 = data[0];
+                let d2 = data[1];
+        
+                if (d1 == null) {
+                    return null;
+                } else {
+                    let d = clone(d1);
+                    if (d2.transtitle) d.transtitle = d2.transtitle;
+                    if (d2.series) d.series = d2.series;
+                    if (d2.genres.length > 0) d.genres = d2.genres;
+                    if (d2.posters.length > 0) d.posters = d2.posters;
+        
+                    return d;
+                }
+            });
+        }
+    }
 ]
 
 function findCrawlers (selector) {
