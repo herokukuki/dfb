@@ -3,7 +3,7 @@
 const { MovieInfo } = require('../../models/types.js');
 const leech = require('../leech-promise.js');
 
-const NAME = 'caribbean-en2';
+const NAME = 'caribbeancom-en2';
 module.exports.name = function () {
     return NAME;
 }

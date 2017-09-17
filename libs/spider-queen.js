@@ -69,12 +69,12 @@ const spiders = {
         }
     },
 
-    "caribbean": {
+    "caribbeancom": {
         "target": "movie",
         "crawl": function (opt) {
-            let crawler1 = crawlers["caribbean"];
-            let crawler2 = crawlers["caribbean-en1"];
-            let crawler3 = crawlers["caribbean-en2"];
+            let crawler1 = crawlers["caribbeancom"];
+            let crawler2 = crawlers["caribbeancom-en1"];
+            let crawler3 = crawlers["caribbeancom-en2"];
         
             return Promise.all([
                 crawler1.crawl(opt),
@@ -101,20 +101,53 @@ const spiders = {
     },
 }
 
-function findCapableSpider (target, name) {
-    for (var spiderName in spiders) {
-        if (name.indexOf(spiderName) > -1 && 
-            spiders[spiderName].target == target) {
-            return spiders[spiderName];
+function findCrawlers (selector) {
+    let result = [];
+    for (var name in crawlers) {
+        let crawler = crawlers[name];
+        if (selector(crawler)) {
+            result.push(crawler);
         }
     }
-    return null;
+    return result;
+}
+
+function firstCrawler (selector) {
+    let result = findCrawlers(selector);
+    if (result.length > 0) {
+        return result[0];
+    } else {
+        return null;
+    }
+}
+
+function findSpiders (selector) {
+    let result = [];
+    for (var name in spiders) {
+        let spider = spiders[name];
+        if (selector({ "name": name, "o": spider })) {
+            result.push(spider);
+        }
+    }
+    return result;
+}
+
+function firstSpider (selector) {
+    let result = findSpiders(selector);
+    if (result.length > 0) {
+        return result[0];
+    } else {
+        return null;
+    }
 }
 
 function summon (target, qtext) {
 
     if (target == "human") {
-        return [ spiders["minnano-av"], null ];
+        return [ 
+            firstSpider(v => v.name == "minnano-av"), 
+            null 
+        ];
     }
 
     if (target == "movie") {
@@ -123,11 +156,18 @@ function summon (target, qtext) {
             let name = qtext.substring(0, pos).trim();
             let id = qtext.substring(pos).trim();
             
-            let spider = findCapableSpider(target, name);
+            let spider = firstSpider(
+                v => 
+                    v.name.indexOf(name) > -1 && 
+                    v.o.target == target);
+
             if (spider) {
                 return [ spider, id ];
             } else {
-                return [ crawlers[name], null ];
+                return [ 
+                    firstCrawler(v => v.name() == name), 
+                    id 
+                ];
             }
         } else {
             throw new Error('Not Implemented');
