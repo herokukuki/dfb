@@ -34,15 +34,6 @@ function formatDate (val) {
     return { year, releasedate };
 }
 
-function formatDuration (val) {
-    let p = val.split(':');
-    let hours = parseInt(p[0]);
-    let minutes = parseInt(p[1]);
-    let seconds = parseInt(p[2]);
-
-    return (hours * 60) + minutes + (seconds / 60);
-}
-
 function formatPoster (val) {
     let url = val.replace('index.html', '');
     return url + 'images/poster_en.jpg';
@@ -80,7 +71,7 @@ function crawl (opt) {
                 info.year = year;
                 info.releasedate = releasedate;
 
-                info.duration = formatDuration($('dd span[itemprop="duration"]').text());
+                info.duration = $('dd span[itemprop="duration"]').text();
 
                 info.maker = 'Caribbeancom';
 

@@ -27,15 +27,6 @@ function formatTitle (val) {
         .trim();
 }
 
-function formatDuration (val) {
-    let p = val.split(':');
-    let hours = parseInt(p[0]);
-    let minutes = parseInt(p[1]);
-    let seconds = parseInt(p[2]);
-
-    return (hours * 60) + minutes + (seconds / 60);
-}
-
 function formatPoster (val) {
     let url = val.replace('index.html', '');
     return url + 'images/l_l.jpg';
@@ -72,9 +63,7 @@ function crawl (opt) {
                 info.releasedate = $('div.movie-info dt:contains("販売日:")').next().text();
                 info.year = info.releasedate.substring(0, 4);
 
-                info.duration = formatDuration(
-                    $('div.movie-info dt:contains("再生時間:")').next().text()
-                );
+                info.duration = $('div.movie-info dt:contains("再生時間:")').next().text();
 
                 info.maker = 'カリビアンコムプレミアム';
 

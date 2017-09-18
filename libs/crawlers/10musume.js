@@ -27,15 +27,6 @@ function formatTitle (val) {
         .trim();
 }
 
-function formatDuration (val) {
-    let p = val.split(':');
-    let hours = parseInt(p[0]);
-    let minutes = parseInt(p[1]);
-    let seconds = parseInt(p[2]);
-
-    return (hours * 60) + minutes + (seconds / 60);
-}
-
 function formatPoster (val) {
     let url = val.replace('index.html', '');
     return url + 'images/str.jpg';
@@ -75,9 +66,8 @@ function crawl (opt) {
                 info.releasedate = $('div.detail-info__meta dt:contains("配信日:")').next().text();
                 info.year = info.releasedate.substring(0, 4);
 
-                info.duration = formatDuration(
-                    $('div.detail-info__meta dt:contains("再生時間:")').next().text()
-                );
+                info.duration =
+                    $('div.detail-info__meta dt:contains("再生時間:")').next().text();
 
                 info.maker = '天然むすめ';
 

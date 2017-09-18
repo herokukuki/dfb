@@ -20,6 +20,19 @@ module.exports.domain = function () {
 
 const BASE_URL = 'https://' + DOMAIN;
 
+function formatDuration (sec_num) {
+    // val in seconds
+    let hours   = Math.floor(sec_num / 3600);
+    let minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+    let seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+    if (hours   < 10) { hours   = "0" + hours; }
+    if (minutes < 10) { minutes = "0" + minutes; }
+    if (seconds < 10) { seconds = "0" + seconds; }
+    
+    return hours + ':' + minutes + ':' + seconds;
+}
+
 function crawl (opt) {
     let url = "";
     if (typeof opt == 'string') {
@@ -56,7 +69,7 @@ function crawl (opt) {
 
                 info.posters.push(data["ThumbHigh"]);
 
-                info.duration = data["Duration"] / 60;
+                info.duration = formatDuration(data["Duration"]);
 
                 info.description = data["Desc"];
 

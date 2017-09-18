@@ -34,15 +34,6 @@ function formatDate (val) {
     return { year, releasedate };
 }
 
-function formatDuration (val) {
-    let p = val.split(':');
-    let hours = parseInt(p[0]);
-    let minutes = parseInt(p[1]);
-    let seconds = parseInt(p[2]);
-
-    return (hours * 60) + minutes + (seconds / 60);
-}
-
 function formatRating (val) {
     let s = val.substring('/images/star/star_'.length).replace('.gif', '');
     return parseInt(s) / 10;
@@ -91,7 +82,7 @@ function crawl (opt) {
                 info.year = year;
                 info.releasedate = releasedate;
 
-                info.duration = formatDuration($('td:contains("Length:")').next().text());
+                info.duration = $('td:contains("Length:")').next().text();
 
                 info.maker = 'Caribbeancom';
 

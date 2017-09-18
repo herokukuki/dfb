@@ -128,7 +128,6 @@ class MovieInfo {
         // imdb
         this.tagline = op.tagline || '';
 
-        // duration in minutes - numeric
         this.duration = op.duration || '';
     }
 }
