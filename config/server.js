@@ -23,6 +23,10 @@ const movieRoute = require('../routes/movie.js');
 app.use('/human', humanRoute);
 app.use('/movie', movieRoute);
 
+app.all('/', (req, res) => {
+    res.redirect('https://www.google.com');
+});
+
 app.use(function (err, req, res, next) {
     console.log(err);
 

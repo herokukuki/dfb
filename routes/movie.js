@@ -20,6 +20,9 @@ router.get('/', (req, res) => {
         releasedate: '2017-09-13',
         year: '2017',
 
+        country: 'Japan',
+        origlang: 'Japanese',
+
         genres: [
             {url: "", text: "Pornstar"},
             {url: "", text: "Older women"},
@@ -67,7 +70,7 @@ router.get('/', (req, res) => {
 
         tagline: '',
 
-        duration: 19.9,
+        duration: '00:19:54',
     }));
 });
 

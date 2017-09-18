@@ -50,6 +50,16 @@
                     <dd><%= year %></dd>
                 </dl>
 
+                <dl>
+                    <dt>Country:</dt>
+                    <dd><%= country %></dd>
+                </dl>
+
+                <dl>
+                    <dt>Original Language:</dt>
+                    <dd><%= origlang %></dd>
+                </dl>
+
                 <% if (director) { %>
                 <dl>
                     <dt>Director:</dt>
@@ -92,6 +102,15 @@
                     <dt>Maker:</dt>
                     <dd><p class="maker"><%= maker %></p></dd>
                 </dl>
+
+                <% if (provider) { %>
+                <dl>
+                    <dt>Provider:</dt>
+                    <dd>
+                        <a href="javascipt:void(0)" onClick="openLink('<%= provider.url %>')"><%= provider.text %></a>
+                    </dd>
+                </dl>
+                <% } %>
 
                 <% if (genres.length > 0) { %>
                 <dl>
