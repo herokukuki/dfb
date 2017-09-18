@@ -56,86 +56,68 @@ function crawl (opt) {
         throw new Error("Invalid Arguments");
     }
 
-    if (formdata) {
-        // POST
-        return new Promise((resolve, reject) => {
-            return leech.post(url, {
-                form: {
-                    "recherche_critere": "f",
-                    "recherche_valeur": formdata[0]
-                }
-            })
-            .then($ => {
+    return new Promise((resolve, reject) => {
+        return leech.post({
+            url: url,
+            form: {
+                "recherche_critere": "f",
+                "recherche_valeur": formdata,
+                "x": 0,
+                "y": 0,
+            }
+        })
+        .then($ => {
+            var result = new SearchResult({ url: url });
 
-                var result = new SearchResult({ url: url });
+            result.queryString = $('div#bloc-nb-resultats').text()
+                .split('results for your search')[1]
+                .trim();
 
-                result.queryString = $('div#bloc-nb-resultats').text()
-                    .split('results for your search')[1]
-                    .trim();
+            result.more = false;
 
-                result.more = false;
+            let peopleEl = $('div.resultat-pornostar');
+            if (peopleEl.length > 0) {
+                peopleEl.each((i, ele) => {
+                    let photo = BASE_URL + $(ele).find('img').attr('src');
+                    let url = BASE_URL + $(ele).find('a').first().attr('href');
+                    let rawname = $(ele).find('p').first().find('a').text().trim();
+                    let altname = ($(ele).find('p:contains("AKA:")').text() || '').trim();
 
-                let peopleEl = $('div.resultat-pornostar');
-                if (peopleEl.length > 0) {
-                    peopleEl.each((i, ele) => {
-                        let photo = BASE_URL + $(ele).find('img').attr('src');
-                        let url = BASE_URL + $(ele).find('a').first().attr('href');
-                        let rawname = $(ele).find('p').first().find('a').text().trim();
-                        let altname = ($(ele).find('p:contains("AKA:")').text() || '').trim();
+                    let info = new HumanInfo({ url: url });
 
-                        let info = new HumanInfo({ url: url });
+                    info.photos.push(photo);
 
-                        info.photos.push(photo);
+                    info.name = formatName(rawname);
 
-                        info.name = formatName(rawname);
-
-                        altname = altname.substring('AKA:'.length);
-                        if (altname.indexOf(',') > 0) {
-                            altname.split(',').forEach(name => {
-                                info.aliases.push(
-                                    formatName(name.trim())
-                                );
-                            });
-                        } else {
+                    altname = altname.substring('AKA:'.length);
+                    if (altname.indexOf(',') > 0) {
+                        altname.split(',').forEach(name => {
                             info.aliases.push(
-                                formatName(altname.trim())
+                                formatName(name.trim())
                             );
-                        }
+                        });
+                    } else {
+                        info.aliases.push(
+                            formatName(altname.trim())
+                        );
+                    }
 
-                        result.results.push(info);
-                    });
-                }
+                    result.results.push(info);
+                });
+            }
 
-                resolve(result);
-            })
-            .catch(err => {
-                var mss = err.message;
-                if (mss.indexOf('HTTP Code') > 0) {
-                    console.log('<' + mss + '> at ' + url)
-                    resolve(null);
-                } else {
-                    reject(err);
-                }
-            });
+            resolve(result);
+        })
+        .catch(err => {
+            var mss = err.message;
+            if (mss.indexOf('HTTP Code') > 0) {
+                console.log('<' + mss + '> at ' + url)
+                resolve(null);
+            } else {
+                reject(err);
+            }
         });
-    } else {
-        // GET
-        return new Promise((resolve, reject) => {
-            return leech.get(url)
-            .then($ => {
-                reject(new Error('Not implemented'));
-            })
-            .catch(err => {
-                var mss = err.message;
-                if (mss.indexOf('HTTP Code') >= 0) {
-                    console.log('<' + mss + '> at ' + url)
-                    resolve(null);
-                } else {
-                    reject(err);
-                }
-            });
-        });
-    }
+    });
 }
 
 module.exports.crawl = crawl;

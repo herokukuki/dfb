@@ -2,10 +2,10 @@
 
 const leech = require('./leech.js');
 
-module.exports.get = function (url) {
+module.exports.get = function (options) {
     return new Promise(
         (resolve, reject) => {
-            leech.get(url,
+            leech.get(options,
                 (err, $) => {
                     if (err) return reject(err);
                     resolve($);
@@ -14,10 +14,10 @@ module.exports.get = function (url) {
     )
 };
 
-module.exports.post = function (url, options) {
+module.exports.post = function (options) {
     return new Promise(
         (resolve, reject) => {
-            leech.post(url, options,
+            leech.post(options,
                 (err, $) => {
                     if (err) return reject(err);
                     resolve($);

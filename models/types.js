@@ -121,6 +121,7 @@ class MovieInfo {
 
         // for jav
         this.label = op.label || null;
+        this.provider = op.provider || null;
 
         this.description = op.description || '';
 

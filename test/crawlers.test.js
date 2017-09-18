@@ -3,7 +3,7 @@
 const chai = require('chai');
 var expect = require('chai').expect;
 
-describe.only('crawlers/... test suite', function() {
+describe('crawlers/... test suite', function() {
 
     // disable time-out
     this.timeout(0);
@@ -51,5 +51,6 @@ describe.only('crawlers/... test suite', function() {
     test(crawlers['caribbeancom-en2'], 'https://en.caribbeancom.com/eng/moviepages/091317-498/index.html');
     test(crawlers['1pondo'], 'https://www.1pondo.tv/dyn/ren/movie_details/movie_id/090217_575.json');
     test(crawlers['heyzo'], 'http://www.heyzo.com/moviepages/0356/index.html');
-    test.only(crawlers['heyzo-en'], 'http://en.heyzo.com/moviepages/0356/index.html');
+    test(crawlers['heyzo-en'], 'http://en.heyzo.com/moviepages/0356/index.html');
+    test(crawlers['caribbeancompr'], 'http://www.caribbeancompr.com/moviepages/092916_003/index.html');
 });

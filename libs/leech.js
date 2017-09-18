@@ -66,15 +66,54 @@ function prepare (args) {
         headers: HEADERS,
     };
 
+    let prcObj = {
+        charset: null
+    };
+
     if (PROXY !== "" && typeof PROXY == 'string') {
         reqObj.proxy = PROXY;
     }
 
     for (let key in args) {
-        reqObj[key] = args[key];
+        if (key in prcObj) {
+            prcObj[key] = args[key];
+        } else {
+            reqObj[key] = args[key];
+        }
     }
 
-    return reqObj;
+    return {
+        "request": reqObj,
+        "process": prcObj,
+    };
+}
+
+function findEncoding (res, body) {
+    let charset = "";
+
+    if (!charset) {
+        charset = (function getCharSet(contentType) {
+            var i = contentType.indexOf("charset=");
+            if (i > -1) {
+                return contentType.substring(i + "charset=".length, contentType.length);
+            }
+            else {
+                return null;
+            }
+
+        })(res.headers["content-type"]);
+    }
+
+    if (!charset) {
+        let startpos = body.indexOf('<meta http-equiv="Content-Type" content="text/html; charset=');
+        let endpos = body.indexOf('">');
+        charset = body.substring(
+            startpos + '<meta http-equiv="Content-Type" content="text/html; charset='.length,
+            endpos
+        );
+    }
+
+    return charset;
 }
 
 function request (args, callback) {
@@ -88,7 +127,7 @@ function request (args, callback) {
         fn = callback;
     }
 
-    httpRequest(args, (err, res, body) => {
+    httpRequest(args["request"], (err, res, body) => {
         
         if (err) {
             return fn(err, null);
@@ -98,42 +137,35 @@ function request (args, callback) {
             return fn(new Error("HTTP Code " + res.statusCode), null);
         }
 
-        var charset = (function getCharSet(contentType) {
-            var i = contentType.indexOf("charset=");
-            if (i > -1) {
-                return contentType.substring(i + "charset=".length, contentType.length);
-            }
-            else {
-                return null;
-            }
+        let charset = args["process"].charset;
 
-        })(res.headers["content-type"]);
-
-        var data = "";
-
-        if (charset == null) {
-            data = iconv.decode(body, "utf8");
+        if (!charset) {
+            charset = findEncoding(res, iconv.decode(body, "utf8")) || "utf8";
         }
-        else {
-            if (charset.toUpperCase() === "EUC-JP") {
-                data = iconv.decode(body, "euc-jp");
-            }
-            else {
-                data = iconv.decode(body, "utf8");
-            }
-        }
-        
+
+        let data = iconv.decode(body, charset);
+
         fn(null, data);        
     })
 }
 
-function get (url, callback) {
+function get (options, callback) {
+    let args = {};
 
-    let args = prepare({
-        url: url,
-        method: GET,
-        encoding: null,
-    });
+    if (typeof options == 'string') {
+        args = prepare({
+            url: options,
+            method: GET,
+            encoding: null,
+        });
+    }
+
+    else if (typeof options == 'object') {
+        options["url"] = options["url"] || '';    
+        options["method"] = GET;
+        options["encoding"] = null;
+        args = prepare(options);
+    }
 
     let fn = (err, data) => {
         if (err) throw err;
@@ -161,21 +193,15 @@ function get (url, callback) {
 
 module.exports.get = get;
 
-function post (url, options, callback) {
+function post (options, callback) {
+    options["json"] = options["json"] || false;
+    options["form"] = options["url"] || {};
+    options["body"] = options["url"] || {};
+    options["url"] = options["url"] || '';    
+    options["method"] = POST;
+    options["encoding"] = null;
 
-    let bdObj = {};
-    bdObj.json = options.json || false;
-    bdObj.form = options.form || {};
-    bdObj.body = options.body || {};
-
-    let args = prepare({
-        url: url,
-        method: POST,
-        encoding: null,
-        json: bdObj.json,
-        form: bdObj.form,
-        body: bdObj.body,
-    });
+    let args = prepare(options);
 
     let fn = (err, data) => {
         if (err) throw err;
