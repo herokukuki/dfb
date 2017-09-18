@@ -252,7 +252,9 @@ function retrieve (url, location, callback) {
                     return callback(new Error('File existed: ' + filepath));
                 } else {
                     
-                    var requestOpt = makeRequest(url);
+                    var requestOpt = prepare({
+                        url: url
+                    })["request"];
         
                     httpRequest(requestOpt)
                         .pipe(fs.createWriteStream(filepath))
