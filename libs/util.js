@@ -20,7 +20,7 @@ module.exports.formatText = formatText;
 
 
 function replaceAll (s, oldS, newS) {
-    return s.replace(/ + oldS + /g, newS);
+    return s.split(oldS).join(newS);
 }
 
 module.exports.replaceAll = replaceAll;

@@ -2,6 +2,7 @@
 
 const { MovieInfo, SearchResult } = require('../../models/types.js');
 const leech = require('../leech-promise.js');
+const util = require('../util.js');
 const parseURL = require('url').parse;
 
 const NAME = 'javlibrary';
@@ -34,6 +35,7 @@ function formatDuration (val) {
 
 function crawl (opt) {
     let url = "";
+    let lang = "en";
     if (typeof opt == 'string') {
         url = opt;
     }
@@ -67,7 +69,39 @@ function crawl (opt) {
                 if ($('div:contains("ID Search Result")').length > 0 ||
                     $('div:contains("品番検索結果")').length > 0) {
                     // Search result
-                    let result = new SearchResult({ url: url });
+                    let result = new SearchResult({ 
+                        url: url,
+                        queryString: 
+                            util.replaceAll(url.split('keyword=')[1], '+', ' ')
+                    });
+
+                    $('div.videos > div').each((i, el) => {
+                        let info = new MovieInfo();
+
+                        let ele = $(el);
+                        info.url = urlpath + ele.find('a').attr('href').substring(2);
+                        info.title = ele.find('a div.id').text().toUpperCase();
+
+                        let val = ele.find('a img').attr('src');
+                        if (val != '//') {
+                            info.posters.push({
+                                url: 'http:' + val
+                            });
+                        }
+                        
+                        if (lang == 'en') {
+                            info.transtitle = ele.find('a div.title').text();
+                        }
+                        if (lang == 'ja') {
+                            info.title = ele.find('a div.title').text();
+                        }
+
+                        result.results.push(info);
+                    });
+
+                    result.more = $('div.page_selector').length > 0;
+
+                    resolve(result);
                 }
 
                 else {
@@ -80,9 +114,12 @@ function crawl (opt) {
 
                     let movid = $('div#video_id td.text').text();
 
-                    info.posters.push({
-                        url: 'http:' + $('div#video_jacket img').attr('src')
-                    });
+                    let val = $('div#video_jacket img').attr('src');
+                    if (val.indexOf('img/noimagepl.gif') == - 1) {
+                        info.posters.push({
+                            url: 'http:' + val
+                        });
+                    }
                     
                     info.title = movid.toUpperCase();
 
