@@ -3,12 +3,13 @@
 const SpiderQueen = require('../libs/spider-queen.js');
 const { MovieInfo, SearchResult } = require('../models/types.js');
 const cache = require('../config/cache.js');
+const util = require('../libs/util.js');
 
 const express = require('express');
 const router  = express.Router();
 
 router.get('/', (req, res) => {
-    res.render('movie/details', new MovieInfo({
+    let info = new MovieInfo({
         // Default value for testing
 
         url: 'https://www.caribbeancom.com/moviepages/091317-498/index.html',
@@ -71,20 +72,26 @@ router.get('/', (req, res) => {
         tagline: '',
 
         duration: '00:19:54',
-    }));
+    });
+
+    let info_cached = util.cacheImageURLs(info);
+
+    res.render('movie/details', info_cached);
 });
 
 router.get('/search', (req, res) => {
     const type = 'movie';
-    let query = req.query['q'].replace(/+/g, ' ');
+    let query = util.replaceAll(req.query['q'], '+', ' ');
 
     SpiderQueen.crawl(query, {
         target: 'movie',
         type: 'search'
     })
     .then(data => {
+        let data_cached = util.cacheImageURLs(data);
+
         if (data instanceof MovieInfo) {
-            res.render('movie/details', data);
+            res.render('movie/details', data_cached);
         } else {
             res.status(404).end();
         }

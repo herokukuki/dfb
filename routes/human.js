@@ -3,12 +3,13 @@
 const SpiderQueen = require('../libs/spider-queen.js');
 const { HumanName, HumanInfo, SearchResult } = require('../models/types.js');
 const cache = require('../config/cache.js');
+const util = require('../libs/util.js');
 
 const express = require('express');
 const router  = express.Router();
 
 router.get('/', function (req, res) {
-    res.render('human/details', {
+    let info = new HumanInfo({
         // Default value for testing
 
         url: 'http://www.minnano-av.com/actress432853.html',
@@ -66,11 +67,15 @@ router.get('/', function (req, res) {
 
         // ...
     });
+
+    let info_cached = util.cacheImageURLs(info);
+
+    res.render('human/details', info_cached);
 });
 
 router.get('/search', function (req, res) {
     const type = 'human';
-    var query = req.query['q'].replace(/+/g, ' ');
+    var query = util.replaceAll(req.query['q'], '+', ' ');
 
     var result = cache.get(type, query);
     if (result) {
@@ -90,11 +95,12 @@ router.get('/search', function (req, res) {
             return data;
         })
         .then(data => {
+            let data_cached = util.cacheImageURLs(data);
+
             if (data instanceof HumanInfo) {
-                cache.set(type, query, data);
-                res.status(200).render('human/details', data);
+                res.status(200).render('human/details', data_cached);
             } else if (data instanceof SearchResult) {
-                res.status(200).render('human/list', data);
+                res.status(200).render('human/list', data_cached);
             } else {
                 res.status(404).end();
             }

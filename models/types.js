@@ -58,6 +58,24 @@ class HumanInfo {
             total: op['rating.total'] || 0,
         };
         this.tags = op.tags || [];
+
+        if (typeof op.bio == 'object') {
+            this.bio.tall = op.bio.tall || '';
+            this.bio.bust = op.bio.bust || '';
+            this.bio.cup = op.bio.cup || '';
+            this.bio.waist = op.bio.waist || '';
+            this.bio.hip = op.bio.hip || '';
+            this.bio.shoes = op.bio.shoes || '';
+            this.bio.blood = op.bio.blood || '';
+        }
+
+        if (typeof op.rating == 'object') {
+            this.rating.looks = op.rating.looks || 0;
+            this.rating.body = op.rating.body || 0;
+            this.rating.cute = op.rating.cute || 0;
+            this.rating.fappable = op.rating.fappable || 0;
+            this.rating.total = op.rating.total || 0;
+        }
     }
 
     get names() {

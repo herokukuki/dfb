@@ -61,13 +61,16 @@ module.exports.config = {};
 module.exports.config.enableProxy = enableProxy;
 module.exports.config.disableProxy = disableProxy;
 
+
 function prepare (args) {
     let reqObj = {
         headers: HEADERS,
+        jar: true,
     };
 
     let prcObj = {
-        charset: null
+        charset: null,
+        target: null,
     };
 
     if (PROXY !== "" && typeof PROXY == 'string') {
@@ -193,11 +196,12 @@ function get (options, callback) {
 
 module.exports.get = get;
 
+
 function post (options, callback) {
     options["json"] = options["json"] || false;
     options["form"] = options["url"] || {};
     options["body"] = options["url"] || {};
-    options["url"] = options["url"] || '';    
+    options["url"] = options["url"] || '';
     options["method"] = POST;
     options["encoding"] = null;
 
@@ -228,6 +232,7 @@ function post (options, callback) {
 }
 
 module.exports.post = post;
+
 
 function retrieve (url, location, callback) {
     
@@ -269,3 +274,27 @@ function retrieve (url, location, callback) {
 }
 
 module.exports.retrieve = retrieve;
+
+
+function pipe (options, callback) {
+    options["url"] = options["url"] || '';
+    options["target"] = options["target"] || null;
+    options["method"] = GET;
+
+    let args = prepare(options);
+
+    let fn = err => {
+        if (err) throw err;
+    }
+
+    if (callback) {
+        fn = callback;
+    }
+
+    httpRequest(args["request"])
+        .pipe(args["process"].target)
+        .on('finish', () => fn(null))
+        .on('error', err => callback(err));
+}
+
+module.exports.pipe = pipe;

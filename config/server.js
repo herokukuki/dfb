@@ -15,11 +15,13 @@ app.set('view engine', 'ejs');
 
 app.use(express.static(path.join(__dirname, '../statics')));
 
+const imageRoute = require('../routes/images.js');
 const humanRoute = require('../routes/human.js');
 const movieRoute = require('../routes/movie.js');
 
 // ========================================================
 
+app.use('/images', imageRoute);
 app.use('/human', humanRoute);
 app.use('/movie', movieRoute);
 

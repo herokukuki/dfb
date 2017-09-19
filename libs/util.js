@@ -1,7 +1,99 @@
 'use strict';
 
+const uuidv4 = require('uuid/v4');
+const uuidv5 = require('uuid/v5');
+
+const clone = require('clone');
+const cache = require('../config/cache.js');
+
+const {
+    SearchResult,
+    HumanInfo,
+    MovieInfo
+} = require('../models/types.js');
+
 function formatText (str) {
     return str.replace(/\s\s+/g, ' ').trim();
 }
 
 module.exports.formatText = formatText;
+
+
+function replaceAll (s, oldS, newS) {
+    return s.replace(/ + oldS + /g, newS);
+}
+
+module.exports.replaceAll = replaceAll;
+
+
+function genId (seedValue) {
+    if (seedValue) {
+        return uuidv5(seedValue + '', uuidv5.URL)
+    } else {
+        return uuidv4();
+    }
+}
+
+module.exports.genId = genId;
+
+
+function cacheImageURLs (obj) {
+    let d = clone(obj);
+
+    if (d instanceof HumanInfo) {
+        for (var i=0; i<d.photos.length; i++) {
+            let url = d.photos[i];
+            let id = genId(url) + '.jpg';
+            cache.set('image', id, url);
+
+            d.photos[i] = '/images/' + id;
+        }
+
+        return d;
+    }
+
+    else if (d instanceof MovieInfo) {
+        for (var i=0; i<d.posters.length; i++) {
+            let url = d.posters[i];
+            let id = genId(url) + '.jpg';
+            cache.set('image', id, url);
+
+            d.posters[i] = '/images/' + id;
+        }
+
+        for (var i=0; i<d.screenshots.length; i++) {
+            let url = d.screenshots[i];
+            let id = genId(url) + '.jpg';
+            cache.set('image', id, url);
+
+            d.screenshots[i] = '/images/' + id;
+        }
+
+        for (var i=0; i<d.covers.length; i++) {
+            let url = d.covers[i];
+            let id = genId(url) + '.jpg';
+            cache.set('image', id, url);
+
+            d.covers[i] = '/images/' + id;
+        }
+
+        return d;
+    }
+
+    else if (d instanceof SearchResult) {
+        let results = [];
+        d.results.forEach(r => {
+            let r_cached = cacheImageURLs(r);
+            results.push(r_cached);
+        });
+        d.results = results;
+
+        return d;
+    }
+
+    else {
+        return null;
+    }
+}
+
+module.exports.cacheImageURLs = cacheImageURLs;
