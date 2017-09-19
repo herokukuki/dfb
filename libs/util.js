@@ -42,9 +42,9 @@ function cacheImageURLs (obj) {
 
     if (d instanceof HumanInfo) {
         for (var i=0; i<d.photos.length; i++) {
-            let url = d.photos[i];
-            let id = genId(url) + '.jpg';
-            cache.set('image', id, url);
+            let obj = d.photos[i];
+            let id = genId(obj.url) + '.jpg';
+            cache.set('image', id, obj);
 
             d.photos[i] = '/images/' + id;
         }
@@ -54,24 +54,24 @@ function cacheImageURLs (obj) {
 
     else if (d instanceof MovieInfo) {
         for (var i=0; i<d.posters.length; i++) {
-            let url = d.posters[i];
-            let id = genId(url) + '.jpg';
+            let obj = d.posters[i];
+            let id = genId(obj.url) + '.jpg';
             cache.set('image', id, url);
 
             d.posters[i] = '/images/' + id;
         }
 
         for (var i=0; i<d.screenshots.length; i++) {
-            let url = d.screenshots[i];
-            let id = genId(url) + '.jpg';
+            let obj = d.screenshots[i];
+            let id = genId(obj.url) + '.jpg';
             cache.set('image', id, url);
 
             d.screenshots[i] = '/images/' + id;
         }
 
         for (var i=0; i<d.covers.length; i++) {
-            let url = d.covers[i];
-            let id = genId(url) + '.jpg';
+            let obj = d.covers[i];
+            let id = genId(obj.url) + '.jpg';
             cache.set('image', id, url);
 
             d.covers[i] = '/images/' + id;

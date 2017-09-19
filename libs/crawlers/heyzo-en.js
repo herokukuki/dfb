@@ -61,9 +61,9 @@ function crawl (opt) {
                 info.title = 'HEYZO ' + movid;
                 info.transtitle = util.formatText($('div#movie h1').text()).split(' - ')[0];
 
-                info.posters.push(
-                    'http://www.heyzo.com/contents/3000/' + movid + '/images/player_thumbnail_en.jpg'
-                )
+                info.posters.push({
+                    url: 'http://www.heyzo.com/contents/3000/' + movid + '/images/player_thumbnail_en.jpg'
+                })
 
                 info.releasedate = util.formatText($('div#movie span.release-day').next().text());
                 info.year = info.releasedate.substring(0, 4);

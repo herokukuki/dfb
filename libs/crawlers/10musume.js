@@ -94,7 +94,9 @@ function crawl (opt) {
 
                 info.description = $('div.detail-info__item > p.detail-info__comment').text().trim();
 
-                info.posters.push(formatPoster(url));
+                info.posters.push({
+                    url: formatPoster(url)
+                });
 
                 resolve(info);
             }

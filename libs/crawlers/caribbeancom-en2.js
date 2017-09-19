@@ -100,7 +100,9 @@ function crawl (opt) {
 
                 info.description = $('div.movie-comment > p').text().trim();
 
-                info.posters.push(formatPoster(url));
+                info.posters.push({
+                    url: formatPoster(url)
+                });
 
                 resolve(info);
             }

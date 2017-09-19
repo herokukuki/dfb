@@ -102,9 +102,9 @@ function crawl (opt) {
                     $('td:contains("Overall:")').next().find('img').attr('src')
                 );
 
-                info.posters.push(
-                    BASE_URL + $('img[src^="/moviepages"]').attr('src')
-                );
+                info.posters.push({
+                    url: BASE_URL + $('img[src^="/moviepages"]').attr('src')
+                });
 
                 resolve(info);
             }

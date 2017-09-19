@@ -67,7 +67,9 @@ function crawl (opt) {
                 info.releasedate = data["Release"];
                 info.year = data["Year"];
 
-                info.posters.push(data["ThumbHigh"]);
+                info.posters.push({
+                    url: data["ThumbHigh"]
+                });
 
                 info.duration = formatDuration(data["Duration"]);
 

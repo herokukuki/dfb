@@ -1,5 +1,6 @@
 'use strict';
 
+const clone = require('clone');
 const cache = require('../config/cache.js');
 const leech = require('../libs/leech-promise.js');
 
@@ -8,12 +9,12 @@ const router  = express.Router();
 
 router.get('/:resid', (req, res) => {
     let resid = req.params['resid'];
-    let url = cache.get('image', resid);
-    if (url) {
-        leech.pipe({
-            url: url,
-            target: res
-        })
+    let reqObj = cache.get('image', resid);
+    if (reqObj) {
+        let options = clone(reqObj);
+        options['target'] = res;
+
+        leech.pipe(options)
         .catch(err => {
             console.error(err);
             res.status(500).end();

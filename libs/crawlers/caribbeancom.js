@@ -112,7 +112,9 @@ function crawl (opt) {
                     info.rating = ele.text().trim().length * 2;
                 }
 
-                info.posters.push(formatPoster(url));
+                info.posters.push({
+                    url: formatPoster(url)
+                });
 
                 resolve(info);
             }

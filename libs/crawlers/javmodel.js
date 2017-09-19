@@ -65,7 +65,9 @@ function crawl (opt) {
 
                     // get photos =========================================
                     ele = $('img[alt="' + info.name.en + '"]').attr('src');
-                    info.photos.push(ele);
+                    info.photos.push({
+                        url: ele
+                    });
                     // ====================================================
 
                     // get birthday, bio, tags ============================

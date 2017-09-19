@@ -64,7 +64,7 @@ module.exports.config.disableProxy = disableProxy;
 
 function prepare (args) {
     let reqObj = {
-        headers: HEADERS,
+        headers: {},
         jar: true,
     };
 
@@ -83,6 +83,11 @@ function prepare (args) {
         } else {
             reqObj[key] = args[key];
         }
+    }
+
+    // Apply headers
+    for (let key in HEADERS) {
+        reqObj.headers[key] = HEADERS[key];
     }
 
     return {

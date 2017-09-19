@@ -181,7 +181,12 @@ function crawl (opt) {
                             ele = $(eleRoot[0]).find('img')
                             var p = $(ele).attr('src');
                             
-                            info.photos.push(BASE_URL + p);
+                            info.photos.push({
+                                url: BASE_URL + p,
+                                headers: {
+                                    'Referer': info.url
+                                }
+                            });
 
                             info.name = formatName(
                                 $(eleRoot[1]).find('h2 > a').text(),
@@ -209,7 +214,12 @@ function crawl (opt) {
 
                     // get photos =============================================
                     val = $($(ele).find('div.thumb img')).attr('src');
-                    info.photos.push(BASE_URL + val);
+                    info.photos.push({
+                        url: BASE_URL + val,
+                        headers: {
+                            'Referer': url
+                        }
+                    });
                     // end photos =============================================
 
                     // get rating =============================================

@@ -112,7 +112,9 @@ function crawl (opt) {
                     }
                 }
 
-                info.posters.push(formatPoster(url));
+                info.posters.push({
+                    url: formatPoster(url)
+                });
 
                 resolve(info);
             }
