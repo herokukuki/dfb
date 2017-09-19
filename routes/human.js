@@ -98,9 +98,23 @@ router.get('/search', function (req, res) {
             let data_cached = util.cacheImageURLs(data);
 
             if (data instanceof HumanInfo) {
+                if (data_cached.photos.length == 0) {
+                    data_cached.photos.push(
+                        '/assets/images/noimageps.gif'
+                    );
+                }
+
                 res.status(200).render('human/details', data_cached);
+
             } else if (data instanceof SearchResult) {
+                data_cached.results.filter(v => v.photos.length == 0).forEach(d => {
+                    d.photos.push(
+                        '/assets/images/noimageps.gif'
+                    );
+                })
+
                 res.status(200).render('human/list', data_cached);
+                
             } else {
                 res.status(404).end();
             }
@@ -128,6 +142,11 @@ router.get('/:infoid', function (req, res) {
             let data_cached = util.cacheImageURLs(data);
 
             if (data instanceof HumanInfo) {
+                if (data_cached.photos.length == 0) {
+                    data_cached.photos.push(
+                        '/assets/images/noimageps.gif'
+                    );
+                }
                 res.status(200).render('human/details', data_cached);
             } else {
                 res.status(404).end();

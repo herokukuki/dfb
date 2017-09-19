@@ -91,7 +91,14 @@ router.get('/search', (req, res) => {
         let data_cached = util.cacheImageURLs(data);
 
         if (data instanceof MovieInfo) {
+            if (data_cached.posters.length == 0) {
+                data_cached.posters.push(
+                    '/assets/images/noimagepl.gif'
+                )
+            }
+
             res.render('movie/details', data_cached);
+            
         } else {
             res.status(404).end();
         }
