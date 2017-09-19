@@ -54,4 +54,5 @@ describe('crawlers/... test suite', function() {
     test(crawlers['heyzo-en'], 'http://en.heyzo.com/moviepages/0356/index.html');
     test(crawlers['caribbeancompr'], 'http://www.caribbeancompr.com/moviepages/092916_003/index.html');
     test(crawlers['10musume'], 'http://www.10musume.com/moviepages/060317_01/index.html');
+    test(crawlers['javlibrary'], 'http://www.javlibrary.com/en/?v=javliktz64');
 });
