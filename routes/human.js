@@ -114,7 +114,7 @@ router.get('/search', function (req, res) {
 
 router.get('/:infoid', function (req, res) {
     const type = 'human-id';
-    const infoid = req.params['infoid'].replace(/+/g, ' ');
+    const infoid = util.replaceAll(req.params['infoid'], '+', ' ');
 
     var result = cache.get(type, infoid);
     if (result) {
@@ -125,9 +125,10 @@ router.get('/:infoid', function (req, res) {
             type: 'id'
         })
         .then(data => {
+            let data_cached = util.cacheImageURLs(data);
+
             if (data instanceof HumanInfo) {
-                cache.set(type, infoid, data);
-                res.status(200).render('human/details', data);
+                res.status(200).render('human/details', data_cached);
             } else {
                 res.status(404).end();
             }
