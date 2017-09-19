@@ -76,7 +76,7 @@ router.get('/', (req, res) => {
 
 router.get('/search', (req, res) => {
     const type = 'movie';
-    let query = req.query['q'];
+    let query = req.query['q'].replace(/+/g, ' ');
 
     SpiderQueen.crawl(query, {
         target: 'movie',

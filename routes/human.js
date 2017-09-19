@@ -70,7 +70,7 @@ router.get('/', function (req, res) {
 
 router.get('/search', function (req, res) {
     const type = 'human';
-    var query = req.query['q'];
+    var query = req.query['q'].replace(/+/g, ' ');
 
     var result = cache.get(type, query);
     if (result) {
@@ -108,7 +108,7 @@ router.get('/search', function (req, res) {
 
 router.get('/:infoid', function (req, res) {
     const type = 'human-id';
-    const infoid = req.params['infoid'];
+    const infoid = req.params['infoid'].replace(/+/g, ' ');
 
     var result = cache.get(type, infoid);
     if (result) {
