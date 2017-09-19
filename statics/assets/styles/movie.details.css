@@ -29,7 +29,7 @@ i.icons {
     vertical-align: -5px;
 }
 
-p.maker {
+[itemprop=maker] p {
     font-weight: bold;
 }
 

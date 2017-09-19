@@ -37,10 +37,12 @@
                     <dd><%= origtitle %></dd>
                 </dl>
 
+                <% if (transtitle) { %>
                 <dl>
                     <dt>Translated Title:</dt>
                     <dd><%= transtitle %></dd>
                 </dl>
+                <% } %>
 
                 <dl>
                     <dt>Release Date:</dt>
@@ -99,8 +101,8 @@
                 <% } %>
 
                 <dl>
-                    <dt>Maker:</dt>
-                    <dd><p class="maker"><%= maker %></p></dd>
+                    <dt itemprop="maker">Maker:</dt>
+                    <dd><p><%= maker %></p></dd>
                 </dl>
 
                 <% if (provider) { %>
