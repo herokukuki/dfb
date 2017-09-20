@@ -3,7 +3,7 @@
 const chai = require('chai');
 var expect = require('chai').expect;
 
-describe('spiders/... test suite', function() {
+describe.only('spiders/... test suite', function() {
 
     // disable time-out
     this.timeout(0);
@@ -12,18 +12,8 @@ describe('spiders/... test suite', function() {
         console.log();
     })
 
-    let summon = function () {
-        let spiders = {};
-        let nest = require('../libs/spider-queen.js').spiders;
-        for (var spider of nest) {
-            let name = spider.name;
-            spiders[name] = spider;
-        }
-        return spiders;
-    }
-
     let test = function (spider, url) {
-        describe('spiders.' + spider.name + ' test cases', function() {
+        describe('spiders.' + spider.name() + ' test cases', function() {
             it('should return data', function() {
                 
                 return spider.crawl(url)
@@ -38,7 +28,7 @@ describe('spiders/... test suite', function() {
     };
 
     test.only = function (spider, url) {
-        describe.only('spiders.' + spider.name + ' test cases', function() {
+        describe.only('spiders.' + spider.name() + ' test cases', function() {
             it('should return data', function() {
                 
                 return spider.crawl(url)
@@ -52,7 +42,10 @@ describe('spiders/... test suite', function() {
         });
     };
 
-    let spiders = summon();
+    let spiders = require('../libs/spiders');
+    test(spiders['minnano-av'], {qtext: '竹内しずか【登', type: 'search'});
+    test(spiders['caribbeancom'], {qtext: '091317-498', type: 'search'});
+    test(spiders['heyzo'], {qtext: '0356', type: 'search'});
     test(spiders['dmm'], {qtext: 'AVOP-210', type: 'search'});
     test(spiders['dmm'], {qtext: 'AVOP 2', type: 'search'});
 });
