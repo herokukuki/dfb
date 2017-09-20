@@ -2,6 +2,7 @@
 
 const { MovieInfo } = require('../../models/types.js');
 const leech = require('../leech-promise.js');
+const util = require('../libs/util.js')
 
 const NAME = '10musume';
 module.exports.name = function () {
@@ -82,8 +83,8 @@ function crawl (opt) {
                     info.genres.push(genre);
                 });
 
-                let ele = $('div.detail-info__meta dt:contains("出演:")').next().find('a')
-                ele.text().split(' ').forEach(el => {
+                let ele = $('div.detail-info__meta dt:contains("出演:")').next().find('a');
+                util.split(ele.text(), [' ', '&']).forEach(el => {
                     let actor = {
                         url: ele.attr('href'),
                         text: el

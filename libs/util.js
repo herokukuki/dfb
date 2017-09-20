@@ -26,6 +26,18 @@ function replaceAll (s, oldS, newS) {
 module.exports.replaceAll = replaceAll;
 
 
+function split (s, delimiters) {
+    if (typeof delimiters == 'string') {
+        return s.split(delimiters);
+    } else if (delimiters instanceof Array) {
+        return s.split(new RegExp(delimiters.join('|'), 'g'))
+            .filter(v => v);
+    }
+}
+
+module.exports.split = split;
+
+
 function genId (seedValue) {
     if (seedValue) {
         return uuidv5(seedValue + '', uuidv5.URL)
