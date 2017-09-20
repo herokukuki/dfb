@@ -3,7 +3,7 @@
 const chai = require('chai');
 var expect = require('chai').expect;
 
-describe.only('crawlers/... test suite', function() {
+describe('crawlers/... test suite', function() {
 
     // disable time-out
     this.timeout(0);
@@ -56,4 +56,6 @@ describe.only('crawlers/... test suite', function() {
     test(crawlers['10musume'], 'http://www.10musume.com/moviepages/060317_01/index.html');
     test(crawlers['javlibrary'], 'http://www.javlibrary.com/en/?v=javliobuzi');
     test(crawlers['javlibrary'], 'http://www.javlibrary.com/en/vl_searchbyid.php?keyword=mad-08');
+    test(crawlers['dmm'], 'http://unblockdmm.com/browse.php?u=http://www.dmm.co.jp/mono/dvd/-/detail/=/cid=143avop021');
+    test(crawlers['dmm'], 'http://unblockdmm.com/browse.php?u=http://www.dmm.co.jp/search/=/searchstr=abp%202/analyze=V1EBDlYPUwI_/limit=30/sort=date');
 });
