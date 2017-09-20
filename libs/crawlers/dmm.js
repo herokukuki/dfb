@@ -51,8 +51,6 @@ function crawl (opt) {
         throw new Error("Invalid Arguments");
     }
 
-    let urlpath = BASE_URL + parseURL(url).pathname;
-
     return new Promise((resolve, reject) => {
         leech.get(url)
         .then($ => {
