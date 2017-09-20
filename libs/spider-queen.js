@@ -1,8 +1,5 @@
 'use strict';
 
-const clone = require('clone');
-const util = require('./util.js');
-const { HumanInfo, MovieInfo, SearchResult } = require('../models/types.js');
 const crawlers = require('./crawlers');
 const spiders = require('./spiders');
 
