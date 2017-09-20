@@ -2,9 +2,9 @@
 
 const clone = require('clone');
 const util = require('../util.js');
-
-const { HumanInfo, SearchResult } = require('../../models/types.js');
 const crawlers = require('../crawlers');
+
+const { HumanInfo } = require('../../models/types.js');
 
 const NAME = 'minnano-av';
 module.exports.name = function () {
@@ -68,9 +68,6 @@ function crawl (opt) {
                 
                 return info;
             });
-        } else if (d instanceof SearchResult) {
-            // End of the road, I want to get some images of the people but I can't.
-            return d;
         } else {
             return d;
         }

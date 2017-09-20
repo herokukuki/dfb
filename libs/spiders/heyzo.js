@@ -2,8 +2,6 @@
 
 const clone = require('clone');
 const util = require('../util.js');
-
-const { MovieInfo, SearchResult } = require('../../models/types.js');
 const crawlers = require('../crawlers');
 
 const NAME = 'heyzo';
