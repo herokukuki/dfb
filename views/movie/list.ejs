@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/assets/styles/reset.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
     <link rel="stylesheet" href="/assets/styles/default.css">
-    <link rel="stylesheet" href="/assets/styles/human.list.css">
+    <link rel="stylesheet" href="/assets/styles/movie.list.css">
 </head>
 
 <body>
@@ -25,27 +25,27 @@
             <div class="col m12 s12 l12">
                 <table class="bordered striped">
                     <thead>
-                        <th>Name</th>
+                        <th>List</th>
                     </thead>
                     <tbody>
                         <% results.forEach(function (result) { %>
                         <tr>
                             <td width="25%">
-                                <img class="materialboxed z-depth-5" src="<%= result.photos[0] %>">
+                                <img class="materialboxed z-depth-5" src="<%= result.posters[0] %>">
                             </td>
                             <td width="75%">
                                 <div class="my-value">
-                                    <p class="name">
+                                    <p class="title">
                                         <a href="javascript:void(0)" 
                                             onclick="openLink('<%= result.localurl %>')">
-                                            <%= result.name.og %>
+                                            <%= result.title.toUpperCase() %>
                                         </a>
                                     </p>
-                                    <p class="transname"><%= result.name.en %></p>
+                                    <p class="origtitle truncate"><%= result.origtitle %></p>
                                     <p class="url">
                                         <a href="javascript:void(0)" 
                                             onclick="openLink('<%= result.url %>')">
-                                            www.minnano-av.com
+                                            go to source
                                         </a>
                                     </p>
                                 </div>

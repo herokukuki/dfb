@@ -117,7 +117,9 @@ function crawl (opt) {
                 $('div#sample-image-block img').each((i, el) => {
                     let ele = $(el);
                     info.screenshots.push({
-                        url: decodeURIComponent(ele.attr('src')),
+                        url: decodeURIComponent(
+                            util.replaceAll(ele.attr('src'), '-', 'jp-')
+                        ),
                     });
                 });
                 

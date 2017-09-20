@@ -72,7 +72,10 @@ function summon (target, qtext) {
                 ];
             }
         } else {
-            throw new Error('Not Implemented');
+            return [ 
+                firstSpider(v => v.name() == "dmm"), 
+                null 
+            ];
         }
     }
 }

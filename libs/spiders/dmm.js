@@ -61,8 +61,8 @@ function crawl (opt) {
 
                                 if (d22 instanceof MovieInfo) {
                                     let d = clone(d21);
-                                    d.transtitle = d22.transtitle;
-                                    d.genres = d22.genres;
+                                    if (d22.transtitle) d.transtitle = d22.transtitle;
+                                    if (d22.genres.length > 0) d.genres = d22.genres;
                                     return d;
                                 }
 
@@ -74,15 +74,10 @@ function crawl (opt) {
                                         let d22_url = d22.results[0].url;
                                         return javlib.crawl(d22_url)
                                         .then(d3 => {
-                                            if (d3.genres.length > 0) {
-                                                let d = clone(d21);
-                                                d.transtitle = d3.transtitle;
-                                                d.genres = d3.genres;
-
-                                                return d;
-                                            }
-
-                                            return d21;
+                                            let d = clone(d21);
+                                            if (d3.transtitle) d.transtitle = d3.transtitle;
+                                            if (d3.genres.length > 0) d.genres = d3.genres;
+                                            return d;
                                         })
 
                                     } else {

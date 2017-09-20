@@ -48,12 +48,12 @@ router.get('/', (req, res) => {
         rating: 10,
 
         posters: [
-            "https://www.caribbeancom.com/moviepages/091317-498/images/l_l.jpg"
+            { url: "https://www.caribbeancom.com/moviepages/091317-498/images/l_l.jpg" }
         ],
 
         screenshots: [
-            "https://www.caribbeancom.com/moviepages/091317-498/images/l/001.jpg",
-            "https://www.caribbeancom.com/moviepages/091317-498/images/l/002.jpg"
+            { url: "https://www.caribbeancom.com/moviepages/091317-498/images/l/001.jpg" },
+            { url: "https://www.caribbeancom.com/moviepages/091317-498/images/l/002.jpg" },
         ],
 
         covers: [],
@@ -90,7 +90,7 @@ router.get('/search', (req, res) => {
     .then(data => {
         let data_cached = util.cacheImageURLs(data);
 
-        if (data instanceof MovieInfo) {
+        if (data_cached instanceof MovieInfo) {
             if (data_cached.posters.length == 0) {
                 data_cached.posters.push(
                     '/assets/images/noimagepl.gif'
@@ -98,8 +98,25 @@ router.get('/search', (req, res) => {
             }
 
             res.render('movie/details', data_cached);
-            
-        } else {
+        } 
+        
+        else if (data_cached instanceof SearchResult) {
+            if (data_cached.results.length > 0) {
+                data_cached.results.filter(v => v.posters.length == 0)
+                .forEach(mov => {
+                    mov.posters.push(
+                        '/assets/images/noimagepl.gif'
+                    )
+                });
+
+                res.render('movie/list', data_cached);
+            }
+            else {
+                res.render('movie/list-notfound', data_cached);
+            }
+        }
+        
+        else {
             res.status(404).end();
         }
     })

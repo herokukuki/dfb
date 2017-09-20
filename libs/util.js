@@ -56,7 +56,7 @@ function cacheImageURLs (obj) {
         for (var i=0; i<d.posters.length; i++) {
             let obj = d.posters[i];
             let id = genId(obj.url) + '.jpg';
-            cache.set('image', id, url);
+            cache.set('image', id, obj);
 
             d.posters[i] = '/images/' + id;
         }
@@ -64,7 +64,7 @@ function cacheImageURLs (obj) {
         for (var i=0; i<d.screenshots.length; i++) {
             let obj = d.screenshots[i];
             let id = genId(obj.url) + '.jpg';
-            cache.set('image', id, url);
+            cache.set('image', id, obj);
 
             d.screenshots[i] = '/images/' + id;
         }
@@ -72,7 +72,7 @@ function cacheImageURLs (obj) {
         for (var i=0; i<d.covers.length; i++) {
             let obj = d.covers[i];
             let id = genId(obj.url) + '.jpg';
-            cache.set('image', id, url);
+            cache.set('image', id, obj);
 
             d.covers[i] = '/images/' + id;
         }

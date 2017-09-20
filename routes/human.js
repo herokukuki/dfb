@@ -15,7 +15,7 @@ router.get('/', function (req, res) {
         url: 'http://www.minnano-av.com/actress432853.html',
 
         photos: [
-            'http://cdn.javmodel.com/javdata/uploads/tsubomi150.jpg'
+            { url: 'http://cdn.javmodel.com/javdata/uploads/tsubomi150.jpg' }
         ],
 
         name: new HumanName({
@@ -89,7 +89,7 @@ router.get('/search', function (req, res) {
             if (data instanceof SearchResult) {
                 for (var info of data.results) {
                     var infoid = info.url.substring(info.url.lastIndexOf('/') + 1);
-                    info["local-url"] = infoid;
+                    info.localurl = infoid;
                 }
             }
             return data;
@@ -97,7 +97,7 @@ router.get('/search', function (req, res) {
         .then(data => {
             let data_cached = util.cacheImageURLs(data);
 
-            if (data instanceof HumanInfo) {
+            if (data_cached instanceof HumanInfo) {
                 if (data_cached.photos.length == 0) {
                     data_cached.photos.push(
                         '/assets/images/noimageps.gif'
@@ -106,14 +106,18 @@ router.get('/search', function (req, res) {
 
                 res.status(200).render('human/details', data_cached);
 
-            } else if (data instanceof SearchResult) {
+            } else if (data_cached instanceof SearchResult) {
                 data_cached.results.filter(v => v.photos.length == 0).forEach(d => {
                     d.photos.push(
                         '/assets/images/noimageps.gif'
                     );
                 })
 
-                res.status(200).render('human/list', data_cached);
+                if (data_cached.results.length == 0) {
+                    res.status(200).render('human/list-notfound', data_cached);
+                } else {
+                    res.status(200).render('human/list', data_cached);
+                }
                 
             } else {
                 res.status(404).end();
