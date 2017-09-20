@@ -82,7 +82,7 @@ function crawl (opt) {
                 info.year = year;
                 info.releasedate = releasedate;
 
-                info.duration = $('td:contains("Length:")').next().text();
+                info.duration = $('td:contains("Length:")').next().text().trim();
 
                 info.maker = 'Caribbeancom';
 

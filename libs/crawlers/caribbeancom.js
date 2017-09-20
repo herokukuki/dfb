@@ -71,7 +71,7 @@ function crawl (opt) {
                 info.year = year;
                 info.releasedate = releasedate;
 
-                info.duration = $('dd span[itemprop="duration"]').text();
+                info.duration = $('dd span[itemprop="duration"]').text().trim();
 
                 info.maker = 'カリビアンコム';
 
