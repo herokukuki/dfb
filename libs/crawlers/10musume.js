@@ -2,7 +2,7 @@
 
 const { MovieInfo } = require('../../models/types.js');
 const leech = require('../leech-promise.js');
-const util = require('../libs/util.js')
+const util = require('../util.js')
 
 const NAME = '10musume';
 module.exports.name = function () {
