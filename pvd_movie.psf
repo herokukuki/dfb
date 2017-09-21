@@ -228,7 +228,7 @@ begin
             HTMLValue(HTML, StartPos, EndPos, 'openLink(''', ''')">') + 
             '">' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>') + '</link>';
         
-        AddFieldValueXML('category', HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
+        AddFieldValue(6, HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
         LogMessage('label: ' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
     end;
     
@@ -242,7 +242,7 @@ begin
             HTMLValue(HTML, StartPos, EndPos, 'openLink(''', ''')">') + 
             '">' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>') + '</link>';
         
-        AddFieldValueXML('category', HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
+        AddFieldValue(6, HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
         LogMessage('series: ' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
     end;
     
@@ -260,7 +260,7 @@ begin
             HTMLValue(HTML, StartPos, EndPos, 'openLink(''', ''')">') + 
             '">' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>') + '</link>';
         
-        AddFieldValueXML('category', HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
+        AddFieldValue(6, HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
         LogMessage('provider: ' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
     end;
     

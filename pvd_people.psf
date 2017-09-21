@@ -264,7 +264,12 @@ begin
   
   // Cup
   Val := HTMLValue(HTML, StartPos, EndPos, '<p>', '</p>');
-  Cup := 'Cup ' + Val;
+  if Val <> '' then
+  begin
+    Cup := 'Cup ' + Val;
+    AddFieldValue(6, Cup);
+    LogMessage(Cup);
+  end;
   
   StartPos := PosFrom('Blood Type:', HTML, EndPos);
   EndPos := PosFrom('</div>', HTML, StartPos);
@@ -284,29 +289,15 @@ begin
   StartPos := PosFrom('Tags:', HTML, EndPos);
   EndPos := PosFrom('<script', HTML, StartPos);
   
-  Val := '';
   StartPos := PosFrom('<div class="chip">', HTML, StartPos);
   while (StartPos < EndPos) and (StartPos > 0) do
   begin
-    Val := Val + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>');
+    Val := HTMLValue(HTML, StartPos, EndPos, ')">', '</a>');
+    AddFieldValue(6, Val);
+    LogMessage('genre: ' + Val);
     StartPos := PosFrom('<div class="chip">', HTML, StartPos + 1);
-    if (StartPos < EndPos) and (StartPos > 0) then
-      Val := Val + ', ';
   end;
-  Tags := Val;
-  
-  LogMessage('tags: ' + Tags);
-  
-  // Genre
-  if (Cup = '') and (Tags = '') then
-    AddHTMLValue('genre', '')
-  else if (Cup <> '') and (Tags = '') then
-    AddHTMLValue('genre', Cup)
-  else if (Cup = '') and (Tags <> '') then
-    AddHTMLValue('genre', Tags)
-  else
-    AddHTMLValue('genre', Cup + ', ' + Tags);
-    
+ 
   // Comment
   // AddHTMLValue('comment', 'Minnano-av URL: ' + '<link url="' + MinnaURL + '">' + 'www.minnano-av.com' + '</link>');
   AddHTMLValue('url', MinnaURL);

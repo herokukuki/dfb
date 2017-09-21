@@ -157,9 +157,11 @@ function crawl (opt) {
                     }
                 }
 
-                info.rating = parseFloat(
-                    JSON.parse($('script[type="application/ld+json"]')[0].childNodes[0].data.trim())["aggregateRating"]["ratingValue"]
-                ) * 2;
+                if ($('script[type="application/ld+json"]').length > 0) {
+                    info.rating = parseFloat(
+                        JSON.parse($('script[type="application/ld+json"]')[0].childNodes[0].data.trim())["aggregateRating"]["ratingValue"]
+                    ) * 2;
+                }
 
                 ele = $('table[cellpadding="2"] td:contains("収録時間：")').next().text();
                 if (ele != '----') {
