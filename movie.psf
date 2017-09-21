@@ -1,0 +1,372 @@
+const
+
+  // Parse mode
+  pmSearch   = 1;
+  pmJavlib   = 2;
+  pmPoster   = 3;
+  pmFinished = 4;
+
+  //Parse results
+  prError     = 0; 
+  prFinished  = 1;
+  prList      = 2;
+  prListImage = 3;
+  prDownload  = 4;
+
+  //Credits types
+  ctActors    = 0;
+  ctDirectors = 1;
+  ctWriters   = 2;
+  ctComposers = 3;
+  ctProducers = 4;
+
+  //Script data
+  SCRIPT_VERSION = '1.0';
+  SCRIPT_NAME    = 'Fellajn Movie info.';
+  SCRIPT_DESC    = 'Get movie info from my server';
+  SCRIPT_LANG    = $11; //Japanese
+  SCRIPT_TYPE    = 0; //Movies
+  CODE_PAGE      = 65001; //UTF-8
+  RATING_NAME    = 'Avg';
+
+  BASE_URL   = 'http://leech-server.herokuapp.com';
+  SEARCH_STR_TMP = '/movie/search?q={qtext}';
+  
+var
+  ParsingMovie: Boolean;
+  PosterURL: String;
+  
+function GetPrefixMode : Byte;
+begin
+  Result := 0;
+end;
+
+function GetScriptVersion: string;
+begin
+  Result := SCRIPT_VERSION;
+end;
+
+function GetScriptName: string;
+begin
+  Result := SCRIPT_NAME;
+end;
+
+function GetScriptDesc: string;
+begin
+  Result := SCRIPT_DESC;
+end;
+
+function GetRatingName: string;
+begin
+  Result := RATING_NAME;
+end;
+
+function GetScriptLang: Cardinal;
+begin
+  Result := SCRIPT_LANG;
+end;
+
+function GetCodePage: Cardinal;
+begin
+  Result := CODE_PAGE;
+end;
+
+function GetBaseURL: AnsiString;
+begin
+  Result := BASE_URL;
+end;
+
+function GetDownloadURL: AnsiString;
+var
+  Val, SearchText: String;
+begin
+  Val := StringReplace(GetFieldValueXML('title'), ' ', '%20', True, False, True);
+  if PosterURL <> '' then
+    Result := PosterURL
+  else begin
+    SearchText := StringReplace(SEARCH_STR_TMP, '{qtext}', Val, True, False, True);
+    Result := BASE_URL + SearchText;
+  end;
+end;
+
+function GetScriptType: Byte;
+begin
+  Result := SCRIPT_TYPE;
+end;
+
+function GetCurrentMode: Byte;
+begin
+  if ParsingMovie then
+    Result := 1
+  else
+    Result := 0;
+end;
+
+function FormatURL(URL: String): String;
+begin
+  if URL <> '' then
+    Result := StringReplace(URL, 'https://', 'http://', False, False, True)
+  else
+    Result := '';
+end;
+
+function HTMLValue(HTML: string; StartPos, EndPos: Integer; StartValue, EndValue: string): string;
+var
+  ValueStart, ValueEnd: Integer;
+begin
+  ValueStart := PosFrom(StartValue, HTML, StartPos);
+  if (ValueStart > 0) and ((ValueStart < EndPos) or (EndPos = 0)) then
+  begin
+    ValueStart := ValueStart + Length(StartValue);
+    ValueEnd := PosFrom(EndValue, HTML, ValueStart);
+    Result := Trim(HTMLToText(RemoveTags(Copy(HTML, ValueStart, ValueEnd - ValueStart), True)));
+  end else
+    Result := '';
+end;
+
+procedure AddHTMLValue(HTML, Field: string; StartPos, EndPos: Integer; StartValue, EndValue: string);
+var
+    Value: string;
+begin
+    if (StartValue <> '') and (EndValue <> '') then
+        Value := HTMLValue(HTML, StartPos, EndPos, StartValue, EndValue)
+    else
+        Value := HTML;
+        
+    if Value <> '' then
+    begin
+        LogMessage(Field +': '+ Value);
+        AddFieldValueXML(Field, Value);
+    end else
+        LogMessage(Field +' not found');
+end;
+
+function GetData(HTML, FieldLabel: String): String;
+var
+    StartPos, EndPos: Integer;
+begin
+    StartPos := Pos(FieldLabel, HTML);
+    if StartPos > 0 then
+    begin
+        EndPos := PosFrom('</dl>', HTML, StartPos);
+        Result := HTMLValue(HTML, StartPos, EndPos, '<dd>', '</dd>');
+    end else
+        Result := '';
+end;
+
+procedure ParseMovie(URL, HTML: String);
+var
+    RootPos, StartPos, EndPos: Integer;
+    Value, Value2: String;
+    sLabel, sSeries, sProvider, sDesc: String;
+    Comment: String;
+begin
+    RootPos := Pos('<div class="container">', HTML);
+    
+    StartPos := RootPos;
+    EndPos := PosFrom('</div>', HTML, StartPos);
+    
+    // Title
+    AddHTMLValue(HTML, 'title', StartPos, EndPos, '<h4 class="title">', '</h4>');
+    
+    StartPos := PosFrom('<div class="row">', HTML, EndPos);
+    EndPos := PosFrom('</div>', HTML, StartPos);
+    
+    // Poster
+    PosterURL := FormatURL(BASE_URL + HTMLValue(HTML, StartPos, EndPos, 'src="', '"'));
+    LogMessage('poster: '+ PosterURL);
+    
+    // Original Title
+    Value := GetData(HTML, 'Original Title:');
+    AddHTMLValue(Value, 'origtitle', 0, 0, '', '');
+    
+    // Translated Title
+    Value := GetData(HTML, 'Translated Title:');
+    AddHTMLValue(Value, 'aka', 0, 0, '', '');
+    
+    // Release Date
+    Value := GetData(HTML, 'Release Date:');
+    AddHTMLValue(Value, 'rdate', 0, 0, '', '');
+    
+    // Year
+    Value := GetData(HTML, 'Year:');
+    AddHTMLValue(Value, 'year', 0, 0, '', '');
+    
+    // Country
+    Value := GetData(HTML, 'Country:');
+    AddHTMLValue(Value, 'country', 0, 0, '', '');
+    
+    // Original Language
+    Value := GetData(HTML, 'Original Language:');
+    AddHTMLValue(Value, 'origlang', 0, 0, '', '');
+    
+    // Director
+    Value := GetData(HTML, 'Director:');
+    if Value <> '' then
+    begin
+        AddMoviePerson(Value, '', '', '', 1);
+        LogMessage('director: ' + Value2);
+    end;
+    
+    // Actors
+    StartPos := Pos('Actors:', HTML);
+    if StartPos > 0 then
+    begin
+        EndPos := PosFrom('</dd>', HTML, StartPos);
+        StartPos := PosFrom('<div class="chip">', HTML, StartPos);
+        while (StartPos < EndPos) and (StartPos > 0) do
+        begin
+            Value := HTMLValue(HTML, StartPos, EndPos, ')">', '</a>');
+            AddMoviePerson(Value, '', '', '', 0);
+            LogMessage('actor: ' + Value);
+            StartPos := PosFrom('<div class="chip">', HTML, StartPos + 1);
+        end;
+    end;
+    
+    // Label
+    StartPos := Pos('Label:', HTML);
+    if StartPos > 0 then
+    begin
+        EndPos := PosFrom('</dd>', HTML, StartPos);
+        AddFieldValue(11, 'Label: ' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
+        sLabel := 'Label: <link url="' + 
+            HTMLValue(HTML, StartPos, EndPos, 'openLink(''', ''')">') + 
+            '">' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>') + '</link>';
+            
+        LogMessage('label: ' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
+    end;
+    
+    // Series
+    Value := GetData(HTML, 'Series:');
+    sSeries := HTMLValue(Value, 0, 0, '">', '</a>');
+    if sSeries <> '' then
+        AddFieldValue(11, 'Series: ' + sSeries);
+    LogMessage('series: ' + sSeries);
+    
+    // Series
+    StartPos := Pos('Series:', HTML);
+    if StartPos > 0 then
+    begin
+        EndPos := PosFrom('</dd>', HTML, StartPos);
+        AddFieldValue(11, 'Series: ' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
+        sSeries := 'Series: <link url="' + 
+            HTMLValue(HTML, StartPos, EndPos, 'openLink(''', ''')">') + 
+            '">' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>') + '</link>';
+            
+        LogMessage('series: ' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
+    end;
+    
+    // Maker
+    Value := GetData(HTML, 'Maker:');
+    AddHTMLValue(Value, 'studio', 0, 0, '', '');
+    
+    // Provider
+    StartPos := Pos('Provider:', HTML);
+    if StartPos > 0 then
+    begin
+        EndPos := PosFrom('</dd>', HTML, StartPos);
+        AddFieldValue(11, 'Provider: ' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
+        sProvider := 'Provider: <link url="' + 
+            HTMLValue(HTML, StartPos, EndPos, 'openLink(''', ''')">') + 
+            '">' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>') + '</link>';
+            
+        LogMessage('provider: ' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
+    end;
+    
+    // Genres
+    StartPos := Pos('Genres:', HTML);
+    if StartPos > 0 then
+    begin
+        EndPos := PosFrom('</dd>', HTML, StartPos);
+        StartPos := PosFrom('<div class="chip">', HTML, StartPos);
+        while (StartPos < EndPos) and (StartPos > 0) do
+        begin
+            Value := HTMLValue(HTML, StartPos, EndPos, ')">', '</a>');
+            AddFieldValue(5, Value);
+            LogMessage('genre: ' + Value);
+            StartPos := PosFrom('<div class="chip">', HTML, StartPos + 1);
+        end;
+    end;
+    
+    // Duration
+    Value := GetData(HTML, 'Duration:');
+    AddHTMLValue(Value, 'duration', 0, 0, '', '');
+    
+    // Rating
+    Value := GetData(HTML, 'Rating:');
+    AddHTMLValue(Trim(Copy(Value, 6, 3)), 'imdbrating', 0, 0, '', '');
+    
+    // URL
+    Value := GetData(HTML, 'URL:');
+    AddHTMLValue(Value, 'url', 0, 0, '', '');
+    
+    // Description
+    Value := '';
+    StartPos := Pos('<div class="row" itemprop="description">', HTML);
+    if StartPos > 0 then
+    begin
+        EndPos := PosFrom('</div>', HTML, StartPos);
+        StartPos := PosFrom('<p>', HTML, StartPos);
+        while (StartPos < EndPos) and (StartPos > 0) do
+        begin
+            if Value <> '' then
+                Value := Value + ' <br> ' + HTMLValue(HTML, StartPos - 1, EndPos, '<p>', '</p>')
+            else
+                Value := HTMLValue(HTML, StartPos - 1, EndPos, '<p>', '</p>');
+                
+            StartPos := PosFrom('<p>', HTML, StartPos + 1);
+        end;
+    end;
+    AddHTMLValue(Value, 'description', 0, 0, '', '');
+    
+    // Screenshots
+    StartPos := Pos('Screenshots', HTML);
+    if StartPos > 0 then
+    begin
+        EndPos := PosFrom('<script', HTML, StartPos);
+        StartPos := PosFrom('<div class="materialboxed-placeholder">', HTML, StartPos);
+        while (StartPos < EndPos) and (StartPos > 0) do
+        begin
+            Value := HTMLValue(HTML, StartPos, EndPos, 'src="', '"');
+            AddImageURL(1, Value);
+            LogMessage('screenshot: ' + Value);
+            StartPos := PosFrom('<div class="materialboxed-placeholder">', HTML, StartPos + 1);
+        end;
+    end;
+    
+    // Comment
+    Comment := '';
+    
+    if sLabel <> '' then
+        Comment := sLabel;
+    
+    if sSeries <> '' then
+    begin
+        if Comment <> '' then
+            Comment := Comment + ' <br> ' + sSeries
+        else
+            Comment := sSeries;
+    end;
+        
+    if sProvider <> '' then
+    begin
+        if Comment <> '' then
+            Comment := Comment + ' <br> ' + sProvider
+        else
+            Comment := sProvider;
+    end;
+        
+    AddFieldValueXML('comment', Comment);
+end;
+
+function ParsePage(HTML: string; URL: AnsiString): Cardinal;
+begin
+    LogMessage('parse movie page');
+    ParsingMovie := True;
+    ParseMovie(URL, HTML);
+    
+    if PosterURL <> '' then
+        Result := prDownload
+    else
+        Result := prFinished;
+end;

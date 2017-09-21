@@ -1,0 +1,377 @@
+﻿const
+
+  //Parse results
+  prError     = 0; 
+  prFinished  = 1;
+  prList      = 2;
+  prListImage = 3;
+  prDownload  = 4;
+
+  //Script data
+  SCRIPT_VERSION = '1.0';
+  SCRIPT_NAME    = 'People info [JP]';
+  SCRIPT_DESC    = '[JP] Get people info from my server';
+  SCRIPT_LANG    = $09; //Japanese
+  SCRIPT_TYPE    = 1; //People
+  CODE_PAGE      = 65001; //UTF-8
+  RATING_NAME    = 'ADE';
+
+  BASE_URL   = 'http://leech-server.herokuapp.com';
+  SEARCH_TMP = '/human/search?q=%s';
+  			 
+var
+  ParsingPeople: Boolean;
+  PhotoURL: String;
+
+function GetScriptVersion: string;
+begin
+  Result := SCRIPT_VERSION;
+end;
+
+function GetScriptName: string;
+begin
+  Result := SCRIPT_NAME;
+end;
+
+function GetScriptDesc: string;
+begin
+  Result := SCRIPT_DESC;
+end;
+
+function GetRatingName: string;
+begin
+  Result := RATING_NAME;
+end;
+
+function GetScriptLang: Cardinal;
+begin
+  Result := SCRIPT_LANG;
+end;
+
+function GetCodePage: Cardinal;
+begin
+  Result := CODE_PAGE;
+end;
+
+function GetBaseURL: AnsiString;
+begin
+  Result := BASE_URL;
+end;
+
+function GetDownloadURL: AnsiString;
+begin
+  if PhotoURL <> '' then
+    Result := PhotoURL
+  else
+    Result := BASE_URL + SEARCH_TMP
+end;
+
+function GetScriptType: Byte;
+begin
+  Result := SCRIPT_TYPE;
+end;
+
+function GetCurrentMode: Byte;
+begin
+  if ParsingPeople then
+    Result := 1
+  else
+    Result := 0;
+end;
+
+function FormatURL(URL: String): String;
+begin
+  if URL <> '' then
+    Result := StringReplace(URL, 'https://', 'http://', False, False, True)
+  else
+    Result := '';
+end;
+
+function FormatPersonName(PName: String): String;
+var
+  Val: String;
+  EndPos: Integer;
+begin
+  if PName <> '' then
+  begin
+    Val := '(';
+    EndPos := Pos(Val, PName) - 1
+    
+    if EndPos > 0 then
+       Result := Trim(Copy(PName, 0, EndPos))
+    else
+       Result := PName;
+  end else
+    Result := '';
+end;
+
+function HTMLValue(HTML: string; StartPos, EndPos: Integer; StartValue, EndValue: string): string;
+var
+  ValueStart, ValueEnd: Integer;
+begin
+  ValueStart := PosFrom(StartValue, HTML, StartPos);
+  if (ValueStart > 0) and ((ValueStart < EndPos) or (EndPos = 0)) then
+  begin
+    ValueStart := ValueStart + Length(StartValue);
+    ValueEnd := PosFrom(EndValue, HTML, ValueStart);
+    Result := Trim(HTMLToText(RemoveTags(Copy(HTML, ValueStart, ValueEnd - ValueStart), True)));
+  end else
+    Result := '';
+end;
+
+procedure AddHTMLValue(Field, Value: string);
+begin
+  LogMessage(Field +': '+ Value);
+  AddFieldValueXML(Field, Value);
+end;
+
+procedure ParseHTML(URL, HTML: string);
+var
+  StartPos, EndPos: Integer;
+  Nickname, Alias, Rating, Bio, Cup, Blood, MinnaURL, Tags: String;
+  Val: String;
+begin
+  StartPos := Pos('<div class="row my-name">', HTML);
+  EndPos := PosFrom('</div>', HTML, StartPos);
+  
+  // Orig Name
+  Val := HTMLValue(HTML, StartPos, EndPos, '<h2>', '</h2>');
+  AddHTMLValue('name', Val);
+  
+  StartPos := PosFrom('<div class="container">', HTML, EndPos);
+  EndPos := PosFrom('</div>', HTML, StartPos);
+  
+  // Photo
+  Val := FormatURL(
+    BASE_URL + HTMLValue(HTML, StartPos, EndPos, '<img class="materialboxed z-depth-5" src="', '" />')
+  );
+  LogMessage('photo: ' + Val);
+  PhotoURL := Val;
+  AddImageURL(4, Val);
+  
+  StartPos := PosFrom('<tbody>', HTML, EndPos);
+  EndPos := PosFrom('</tbody>', HTML, StartPos);
+  
+  // Rating
+  StartPos := PosFrom('Looks', HTML, StartPos);
+  Val := 'Looks: ' + HTMLValue(HTML, StartPos, EndPos, '<td class="value">', '</td>');
+  StartPos := PosFrom('Body', HTML, StartPos);
+  Val := Val + ' | Body: ' + HTMLValue(HTML, StartPos, EndPos, '<td class="value">', '</td>');
+  StartPos := PosFrom('Cute', HTML, StartPos);
+  Val := Val + ' | Cute: ' + HTMLValue(HTML, StartPos, EndPos, '<td class="value">', '</td>');
+  StartPos := PosFrom('Fappa', HTML, StartPos);
+  Val := Val + ' | Fappa: ' + HTMLValue(HTML, StartPos, EndPos, '<td class="value">', '</td>');
+  StartPos := PosFrom('Total', HTML, StartPos);
+  Val := Val + ' | Total: ' + HTMLValue(HTML, StartPos, EndPos, '<b>', '</b>');
+  
+  Rating := Val;
+  LogMessage('rating: ' + Rating);
+  
+  StartPos := PosFrom('Translated name:', HTML, EndPos);
+  if StartPos > 0 then
+  begin
+    EndPos := PosFrom('</div>', HTML, StartPos);
+    
+    // Translated name
+    Val := HTMLValue(HTML, StartPos, EndPos, '<p>', '</p>');
+    AddHTMLValue('transname', Val);
+    
+    LogMessage('transname: ' + Val);
+  end;
+  
+  StartPos := PosFrom('Nickname:', HTML, EndPos);
+  if StartPos > 0 then
+  begin
+    EndPos := PosFrom('</div>', HTML, StartPos);
+    
+    // Nickname
+    Val := '';
+    StartPos := PosFrom('<li>', HTML, StartPos);
+    while (StartPos < EndPos) and (StartPos > 0) do
+    begin
+      Val := Val + HTMLValue(HTML, StartPos, EndPos, '<li>', '</li>');
+      StartPos := PosFrom('<li>', HTML, StartPos + 1);
+      if (StartPos < EndPos) and (StartPos > 0) then
+        Val := Val + '<br>';
+    end;
+    Nickname := Val;
+    
+    LogMessage('nicknames: ' + Nickname);
+  end;
+  
+  StartPos := PosFrom('Alias:', HTML, EndPos);
+  if StartPos > 0 then
+  begin
+    EndPos := PosFrom('</div>', HTML, StartPos);
+    
+    // Alias
+    Val := '';
+    StartPos := PosFrom('<li>', HTML, StartPos);
+    while (StartPos < EndPos) and (StartPos > 0) do
+    begin
+      Val := Val + HTMLValue(HTML, StartPos, EndPos, '<li>', '</li>');
+      StartPos := PosFrom('<li>', HTML, StartPos + 1);
+      if (StartPos < EndPos) and (StartPos > 0) then
+        Val := Val + '<br>';
+    end;
+    Alias := Val;
+    
+    LogMessage('alias: ' + Alias);
+  end;
+  
+  // Altnames
+  if (Nickname = '') and (Alias = '') then
+    AddHTMLValue('altnames', '')
+  else if (Nickname <> '') and (Alias = '') then
+    AddHTMLValue('altnames', Nickname)
+  else if (Nickname = '') and (Alias <> '') then
+    AddHTMLValue('altnames', Alias)
+  else
+    AddHTMLValue('altnames', Nickname + '<br>' + Alias);
+    
+  StartPos := PosFrom('Birthday:', HTML, EndPos);
+  EndPos := PosFrom('</div>', HTML, StartPos);
+  
+  // Birthday
+  Val := HTMLValue(HTML, StartPos, EndPos, '<p>', '</p>');
+  AddHTMLValue('birthday', Val);
+  
+  StartPos := PosFrom('Birthplace:', HTML, EndPos);
+  EndPos := PosFrom('</div>', HTML, StartPos);
+  
+  // Birthplace
+  Val := HTMLValue(HTML, StartPos, EndPos, '<p>', '</p>');
+  AddHTMLValue('birthplace', Val);
+  
+  StartPos := PosFrom('<tbody>', HTML, EndPos);
+  EndPos := PosFrom('</tbody>', HTML, StartPos);
+  
+  // Bio
+  Val := 'Tall: ' + HTMLValue(HTML, StartPos, EndPos, '<td>', '</td>');
+  StartPos := PosFrom('</td>', HTML, StartPos);
+  Val := Val + ' | Bust: ' + HTMLValue(HTML, StartPos, EndPos, '<td>', '</td>');
+  StartPos := PosFrom('</td>', HTML, StartPos);
+  Val := Val + ' | Waist: ' + HTMLValue(HTML, StartPos, EndPos, '<td>', '</td>');
+  StartPos := PosFrom('</td>', HTML, StartPos);
+  Val := Val + ' | Hip: ' + HTMLValue(HTML, StartPos, EndPos, '<td>', '</td>');
+  StartPos := PosFrom('</td>', HTML, StartPos);
+  Val := Val + ' | Shoes: ' + HTMLValue(HTML, StartPos, EndPos, '<td>', '</td>');
+  
+  Bio := Val;
+  
+  StartPos := PosFrom('Cup:', HTML, EndPos);
+  EndPos := PosFrom('</div>', HTML, StartPos);
+  
+  // Cup
+  Val := HTMLValue(HTML, StartPos, EndPos, '<p>', '</p>');
+  Cup := 'Cup ' + Val;
+  
+  StartPos := PosFrom('Blood Type:', HTML, EndPos);
+  EndPos := PosFrom('</div>', HTML, StartPos);
+  
+  // Blood
+  Val := HTMLValue(HTML, StartPos, EndPos, '<p>', '</p>');
+  Blood := 'Blood: ' + Val;
+  
+  StartPos := PosFrom('URL:', HTML, EndPos);
+  EndPos := PosFrom('</div>', HTML, StartPos);
+  
+  // MinnaURL
+  Val := HTMLValue(HTML, StartPos, EndPos, 'openLink(''', ''')">');
+  MinnaURL := Val;
+  
+  
+  StartPos := PosFrom('Tags:', HTML, EndPos);
+  EndPos := PosFrom('<script', HTML, StartPos);
+  
+  Val := '';
+  StartPos := PosFrom('<div class="chip">', HTML, StartPos);
+  while (StartPos < EndPos) and (StartPos > 0) do
+  begin
+    Val := Val + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>');
+    StartPos := PosFrom('<div class="chip">', HTML, StartPos + 1);
+    if (StartPos < EndPos) and (StartPos > 0) then
+      Val := Val + ', ';
+  end;
+  Tags := Val;
+  
+  LogMessage('tags: ' + Tags);
+  
+  // Genre
+  if (Cup = '') and (Tags = '') then
+    AddHTMLValue('genre', '')
+  else if (Cup <> '') and (Tags = '') then
+    AddHTMLValue('genre', Cup)
+  else if (Cup = '') and (Tags <> '') then
+    AddHTMLValue('genre', Tags)
+  else
+    AddHTMLValue('genre', Cup + ', ' + Tags);
+    
+  // Comment
+  // AddHTMLValue('comment', 'Minnano-av URL: ' + '<link url="' + MinnaURL + '">' + 'www.minnano-av.com' + '</link>');
+  AddHTMLValue('url', MinnaURL);
+  
+  // Bio
+  if (Bio = '') and (Blood = '') then
+    Val := ''
+  else if (Bio <> '') and (Blood = '') then
+    Val := '| ' + Bio + ' |'
+  else if (Bio = '') and (Blood <> '') then
+    Val := '| ' + Blood + ' |'
+  else
+    Val := '| ' + Bio + ' | ' + Blood + ' |';
+    
+  // Rating
+  if Rating <> '' then
+    Val := Val + '<br>' + '| ' + Rating + ' |';
+    
+  AddHTMLValue('bio', Val);
+end;
+
+procedure ParseSearchResults(HTML: string);
+var
+  ItemStart, ItemEnd: Integer;
+  Name, URL, Preview: String;
+begin
+  ItemStart := Pos('<tr>', HTML);
+  while ItemStart > 0 do
+  begin
+    ItemEnd := PosFrom('</tr>', HTML, ItemStart+1);
+    
+    Preview := FormatURL(
+        BASE_URL + HTMLValue(HTML, ItemStart, ItemEnd, '<img class="materialboxed z-depth-5" src="', '"')
+    );
+    URL := FormatURL(
+        BASE_URL + '/human/' + HTMLValue(HTML, ItemStart, ItemEnd, 'onclick="openLink(''', ''')"')
+    );
+    Name := HTMLValue(HTML, ItemStart, ItemEnd, ')">', '</a>') + '  |  ' + HTMLValue(HTML, ItemStart, ItemEnd, '<p class="transname">', '</p>');
+    
+    AddSearchResult(Name, '', '', URL, Preview);
+    ItemStart := ItemEnd;
+  end;
+end;
+
+function ParsePage(HTML: string; URL: AnsiString): Cardinal;
+begin
+  if Pos('Search result for', HTML) > 0 then
+  begin
+    // Search mode
+    LogMessage('People found');
+    ParseSearchResults(HTML);
+    Result := prList;
+  end else if Pos('name="404"', HTML) > 0 then
+  begin
+    LogMessage('No people found');
+    Result := prError;
+  end else
+  begin
+    // People mode
+    ParsingPeople := True;
+    ParseHTML(URL, HTML);
+    
+    if PhotoURL <> '' then
+      Result := prDownload
+    else
+      Result := prFinished;
+  end;
+end;
