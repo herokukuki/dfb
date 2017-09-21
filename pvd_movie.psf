@@ -35,11 +35,6 @@ const
 var
   ParsingMovie: Boolean;
   PosterURL: String;
-  
-function GetPrefixMode : Byte;
-begin
-  Result := 0;
-end;
 
 function GetScriptVersion: string;
 begin
@@ -232,16 +227,10 @@ begin
         sLabel := 'Label: <link url="' + 
             HTMLValue(HTML, StartPos, EndPos, 'openLink(''', ''')">') + 
             '">' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>') + '</link>';
-            
+        
+        AddFieldValueXML('category', HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
         LogMessage('label: ' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
     end;
-    
-    // Series
-    Value := GetData(HTML, 'Series:');
-    sSeries := HTMLValue(Value, 0, 0, '">', '</a>');
-    if sSeries <> '' then
-        AddFieldValue(11, 'Series: ' + sSeries);
-    LogMessage('series: ' + sSeries);
     
     // Series
     StartPos := Pos('Series:', HTML);
@@ -252,7 +241,8 @@ begin
         sSeries := 'Series: <link url="' + 
             HTMLValue(HTML, StartPos, EndPos, 'openLink(''', ''')">') + 
             '">' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>') + '</link>';
-            
+        
+        AddFieldValueXML('category', HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
         LogMessage('series: ' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
     end;
     
@@ -269,7 +259,8 @@ begin
         sProvider := 'Provider: <link url="' + 
             HTMLValue(HTML, StartPos, EndPos, 'openLink(''', ''')">') + 
             '">' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>') + '</link>';
-            
+        
+        AddFieldValueXML('category', HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
         LogMessage('provider: ' + HTMLValue(HTML, StartPos, EndPos, ')">', '</a>'));
     end;
     
@@ -327,7 +318,9 @@ begin
         StartPos := PosFrom('<div class="materialboxed-placeholder">', HTML, StartPos);
         while (StartPos < EndPos) and (StartPos > 0) do
         begin
-            Value := HTMLValue(HTML, StartPos, EndPos, 'src="', '"');
+            Value := FormatURL(
+                BASE_URL + HTMLValue(HTML, StartPos, PosFrom('</div>', HTML, StartPos), 'src="', '"')
+            );
             AddImageURL(1, Value);
             LogMessage('screenshot: ' + Value);
             StartPos := PosFrom('<div class="materialboxed-placeholder">', HTML, StartPos + 1);
@@ -343,7 +336,7 @@ begin
     if sSeries <> '' then
     begin
         if Comment <> '' then
-            Comment := Comment + ' <br> ' + sSeries
+            Comment := Comment + '<br>' + sSeries
         else
             Comment := sSeries;
     end;
@@ -351,7 +344,7 @@ begin
     if sProvider <> '' then
     begin
         if Comment <> '' then
-            Comment := Comment + ' <br> ' + sProvider
+            Comment := Comment + '<br>' + sProvider
         else
             Comment := sProvider;
     end;
@@ -359,14 +352,50 @@ begin
     AddFieldValueXML('comment', Comment);
 end;
 
+procedure ParseSearchResults(HTML: string);
+var
+  ItemStart, ItemEnd: Integer;
+  Name, URL, Preview: String;
+begin
+  ItemStart := Pos('<tr>', HTML);
+  while ItemStart > 0 do
+  begin
+    ItemEnd := PosFrom('</tr>', HTML, ItemStart);
+    
+    Preview := FormatURL(
+        BASE_URL + HTMLValue(HTML, ItemStart, ItemEnd, '<img class="materialboxed z-depth-5" src="', '"')
+    );
+    URL := FormatURL(
+        BASE_URL + '/movie/' + HTMLValue(HTML, ItemStart, ItemEnd, 'onclick="openLink(''', ''')"')
+    );
+    Name := HTMLValue(HTML, ItemStart, ItemEnd, ')">', '</a>') + '  |  ' + HTMLValue(HTML, ItemStart, ItemEnd, '<p class="origtitle">', '</p>');
+    
+    AddSearchResult(Name, '', '', URL, Preview);
+    ItemStart := PosFrom('<tr>', HTML, ItemEnd);;
+  end;
+end;
+
 function ParsePage(HTML: string; URL: AnsiString): Cardinal;
 begin
-    LogMessage('parse movie page');
-    ParsingMovie := True;
-    ParseMovie(URL, HTML);
-    
-    if PosterURL <> '' then
-        Result := prDownload
-    else
-        Result := prFinished;
+    if Pos('Search result for', HTML) > 0 then
+    begin
+        // Search mode
+        LogMessage('Movie found');
+        ParseSearchResults(HTML);
+        Result := prList;
+    end else if Pos('name="404"', HTML) > 0 then
+    begin
+        LogMessage('No movie found');
+        Result := prError;
+    end else
+    begin
+        // Movie mode
+        ParsingMovie := True;
+        ParseMovie(URL, HTML);
+
+        if PosterURL <> '' then
+          Result := prDownload
+        else
+          Result := prFinished;
+    end;
 end;

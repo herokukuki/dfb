@@ -311,15 +311,25 @@ begin
   // AddHTMLValue('comment', 'Minnano-av URL: ' + '<link url="' + MinnaURL + '">' + 'www.minnano-av.com' + '</link>');
   AddHTMLValue('url', MinnaURL);
   
-  // Bio
-  if (Bio = '') and (Blood = '') then
+  // Cup & Blood
+  if (Cup = '') and (Blood = '') then
     Val := ''
-  else if (Bio <> '') and (Blood = '') then
-    Val := '| ' + Bio + ' |'
-  else if (Bio = '') and (Blood <> '') then
-    Val := '| ' + Blood + ' |'
+  else if (Cup <> '') and (Blood = '') then
+    Val := Cup
+  else if (Cup = '') and (Blood <> '') then
+    Val := Blood
   else
-    Val := '| ' + Bio + ' | ' + Blood + ' |';
+    Val := Cup + ' | ' + Blood;
+  
+  // Bio
+  if (Bio = '') and (Val = '') then
+    Val := ''
+  else if (Bio <> '') and (Val = '') then
+    Val := '| ' + Bio + ' |'
+  else if (Bio = '') and (Val <> '') then
+    Val := '| ' + Val + ' |'
+  else
+    Val := '| ' + Bio + ' | ' + Val + ' |';
     
   // Rating
   if Rating <> '' then
@@ -336,7 +346,7 @@ begin
   ItemStart := Pos('<tr>', HTML);
   while ItemStart > 0 do
   begin
-    ItemEnd := PosFrom('</tr>', HTML, ItemStart+1);
+    ItemEnd := PosFrom('</tr>', HTML, ItemStart);
     
     Preview := FormatURL(
         BASE_URL + HTMLValue(HTML, ItemStart, ItemEnd, '<img class="materialboxed z-depth-5" src="', '"')
@@ -347,7 +357,7 @@ begin
     Name := HTMLValue(HTML, ItemStart, ItemEnd, ')">', '</a>') + '  |  ' + HTMLValue(HTML, ItemStart, ItemEnd, '<p class="transname">', '</p>');
     
     AddSearchResult(Name, '', '', URL, Preview);
-    ItemStart := ItemEnd;
+    ItemStart := PosFrom('<tr>', HTML, ItemEnd);;
   end;
 end;
 
