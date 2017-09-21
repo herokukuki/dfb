@@ -61,6 +61,7 @@ function crawl (opt) {
 
                                 if (d22 instanceof MovieInfo) {
                                     let d = clone(d21);
+                                    if (d22.title) d.title = d22.title;
                                     if (d22.transtitle) d.transtitle = d22.transtitle;
                                     if (d22.genres.length > 0) d.genres = d22.genres;
                                     return d;
@@ -75,6 +76,7 @@ function crawl (opt) {
                                         return javlib.crawl(d22_url)
                                         .then(d3 => {
                                             let d = clone(d21);
+                                            if (d3.title) d.title = d3.title;
                                             if (d3.transtitle) d.transtitle = d3.transtitle;
                                             if (d3.genres.length > 0) d.genres = d3.genres;
                                             return d;
