@@ -312,8 +312,11 @@ function crawl (opt) {
 
                         var b = val[1].trim().substring(1)
                         if (b !== '') {
-                            info.bio.bust = formatInt(b.split('(')[0]);
-                            info.bio.cup = b.split('(')[1][0];
+                            let bb = b.split('(');
+                            info.bio.bust = formatInt(bb[0]);
+                            if (bb[1]) {
+                                info.bio.cup = bb[1][0];
+                            }
                         }
 
                         info.bio.waist = formatInt(val[2].trim().substring(1));

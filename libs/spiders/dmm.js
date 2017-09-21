@@ -26,7 +26,7 @@ function crawl (opt) {
 
     switch (opt.type) {
         case "search":
-            return dmm.crawl({ qtext: movid, type: 'search' })
+            return dmm.crawl({ qtext: opt.qtext, type: 'search' })
             .then(d1 => {
                 if (d1) {
                     if (d1 instanceof SearchResult) {

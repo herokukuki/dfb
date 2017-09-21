@@ -36,10 +36,10 @@
                     <tbody>
                         <% results.forEach(function (result) { %>
                         <tr>
-                            <td width="25%">
+                            <td width="15%">
                                 <img class="materialboxed z-depth-5" src="<%= result.posters[0] %>">
                             </td>
-                            <td width="75%">
+                            <td width="85%">
                                 <div class="my-value">
                                     <p class="title">
                                         <a href="javascript:void(0)" 
@@ -47,7 +47,7 @@
                                             <%= result.title.toUpperCase() %>
                                         </a>
                                     </p>
-                                    <p class="origtitle truncate"><%= result.origtitle %></p>
+                                    <p class="origtitle"><%= result.origtitle %></p>
                                 </div>
                             </td>
                         </tr>
