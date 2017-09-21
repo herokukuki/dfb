@@ -76,7 +76,7 @@ router.get('/', (req, res) => {
 
     let info_cached = util.cacheImageURLs(info);
 
-    res.render('movie/details', info_cached);
+    util.render(res, 'movie/details', info_cached);
 });
 
 router.get('/search', (req, res) => {
@@ -97,7 +97,7 @@ router.get('/search', (req, res) => {
                 )
             }
 
-            res.render('movie/details', data_cached);
+            util.render(res, 'movie/details', data_cached);
         } 
         
         else if (data_cached instanceof SearchResult) {
@@ -110,10 +110,10 @@ router.get('/search', (req, res) => {
                     )
                 });
 
-                res.render('movie/list', data_cached);
+                util.render(res, 'movie/list', data_cached);
             }
             else {
-                res.render('movie/list-notfound', data_cached);
+                util.render(res, 'movie/list-notfound', data_cached);
             }
         }
         
@@ -146,7 +146,7 @@ router.get('/:infoid', function (req, res) {
                         '/assets/images/noimagepl.gif'
                     );
                 }
-                res.status(200).render('movie/details', data_cached);
+                util.render(res, 'movie/details', data_cached);
 
             } else {
                 res.status(404).end();

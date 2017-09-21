@@ -70,7 +70,7 @@ router.get('/', function (req, res) {
 
     let info_cached = util.cacheImageURLs(info);
 
-    res.render('human/details', info_cached);
+    util.render(res, 'human/details', info_cached);
 });
 
 router.get('/search', function (req, res) {
@@ -95,7 +95,7 @@ router.get('/search', function (req, res) {
                     );
                 }
 
-                res.status(200).render('human/details', data_cached);
+                util.render(res, 'human/details', data_cached);
 
             } else if (data_cached instanceof SearchResult) {
                 data_cached = util.cacheURLs(data_cached);
@@ -106,9 +106,9 @@ router.get('/search', function (req, res) {
                 })
 
                 if (data_cached.results.length == 0) {
-                    res.status(200).render('human/list-notfound', data_cached);
+                    util.render(res, 'human/list-notfound', data_cached);
                 } else {
-                    res.status(200).render('human/list', data_cached);
+                    util.render(res, 'human/list', data_cached);
                 }
                 
             } else {
@@ -141,7 +141,7 @@ router.get('/:infoid', function (req, res) {
                         '/assets/images/noimageps.gif'
                     );
                 }
-                res.status(200).render('human/details', data_cached);
+                util.render(res, 'human/details', data_cached);
 
             } else {
                 res.status(404).end();
