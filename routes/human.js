@@ -86,15 +86,6 @@ router.get('/search', function (req, res) {
             type: 'search'
         })
         .then(data => {
-            if (data instanceof SearchResult) {
-                for (var info of data.results) {
-                    var infoid = info.url.substring(info.url.lastIndexOf('/') + 1);
-                    info.localurl = infoid;
-                }
-            }
-            return data;
-        })
-        .then(data => {
             let data_cached = util.cacheImageURLs(data);
 
             if (data_cached instanceof HumanInfo) {
@@ -107,6 +98,7 @@ router.get('/search', function (req, res) {
                 res.status(200).render('human/details', data_cached);
 
             } else if (data_cached instanceof SearchResult) {
+                data_cached = util.cacheURLs(data_cached);
                 data_cached.results.filter(v => v.photos.length == 0).forEach(d => {
                     d.photos.push(
                         '/assets/images/noimageps.gif'
@@ -131,27 +123,26 @@ router.get('/search', function (req, res) {
 });
 
 router.get('/:infoid', function (req, res) {
-    const type = 'human-id';
     const infoid = util.replaceAll(req.params['infoid'], '+', ' ');
 
-    var result = cache.get(type, infoid);
-    if (result) {
-        res.status(200).render('human/details', result);
-    } else {
-        SpiderQueen.crawl(infoid, {
+    let footprint = cache.get('id', infoid);
+    if (footprint) {
+        SpiderQueen.crawl(footprint.id, {
             target: 'human',
-            type: 'id'
+            type: 'id',
+            assign: footprint.crawler,
         })
         .then(data => {
             let data_cached = util.cacheImageURLs(data);
-
-            if (data instanceof HumanInfo) {
+    
+            if (data_cached instanceof HumanInfo) {
                 if (data_cached.photos.length == 0) {
                     data_cached.photos.push(
                         '/assets/images/noimageps.gif'
                     );
                 }
                 res.status(200).render('human/details', data_cached);
+
             } else {
                 res.status(404).end();
             }
@@ -160,7 +151,11 @@ router.get('/:infoid', function (req, res) {
             console.error(err);
             res.status(500).end();
         });
+
+    } else {
+        res.status(404).end();
     }
+    
 });
 
 module.exports = router;

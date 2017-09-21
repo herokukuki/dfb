@@ -101,6 +101,7 @@ router.get('/search', (req, res) => {
         } 
         
         else if (data_cached instanceof SearchResult) {
+            data_cached = util.cacheURLs(data_cached);
             if (data_cached.results.length > 0) {
                 data_cached.results.filter(v => v.posters.length == 0)
                 .forEach(mov => {
@@ -124,6 +125,42 @@ router.get('/search', (req, res) => {
         console.error(err);
         res.status(500).end();
     });
+});
+
+router.get('/:infoid', function (req, res) {
+    const infoid = util.replaceAll(req.params['infoid'], '+', ' ');
+
+    let footprint = cache.get('id', infoid);
+    if (footprint) {
+        SpiderQueen.crawl(footprint.id, {
+            target: 'movie',
+            type: 'id',
+            assign: footprint.crawler,
+        })
+        .then(data => {
+            let data_cached = util.cacheImageURLs(data);
+    
+            if (data_cached instanceof MovieInfo) {
+                if (data_cached.posters.length == 0) {
+                    data_cached.posters.push(
+                        '/assets/images/noimagepl.gif'
+                    );
+                }
+                res.status(200).render('movie/details', data_cached);
+
+            } else {
+                res.status(404).end();
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).end();
+        });
+
+    } else {
+        res.status(404).end();
+    }
+    
 });
 
 module.exports = router;

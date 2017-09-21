@@ -101,6 +101,14 @@ class SearchResult {
         this.queryString = op.queryString || '';
         this.results = op.results || [];
         this.more = op.more || false;
+        this.footprint = op.footprint || null;
+    }
+
+    getFootprint(data) {
+        if (this.footprint) {
+            return this.footprint(data);
+        }
+        return null;
     }
 }
 

@@ -131,6 +131,13 @@ function formatFloat(str) {
     } else return parseFloat(str);
 }
 
+function getFootprint(info) {
+    return {
+        "crawler": NAME,
+        "id": info.url.substring(info.url.lastIndexOf('/') + 1),
+    }
+}
+
 function crawl (opt) {
     let url = "";
     if (typeof opt == 'string') {
@@ -157,7 +164,8 @@ function crawl (opt) {
 
                     // return SearchResult
                     var result = new SearchResult({
-                        url: url
+                        url: url,
+                        footprint: getFootprint,
                     });
 
                     result.queryString = $(

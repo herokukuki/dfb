@@ -43,7 +43,25 @@ function firstSpider (selector) {
     }
 }
 
-function summon (target, qtext) {
+function summon (options) {
+    let target = options.target || '';
+
+    if (options.assign) {
+        let assign = options.assign;
+        
+        let spider = firstSpider(v => v.name() == assign && 
+                                      v.target() == target);
+        if (spider) {
+            return [spider, null];
+        }
+
+        let crawler = firstCrawler(v => v.name() == assign);
+        if (crawler) {
+            return [crawler, null];
+        }
+    }
+
+    let qtext = options.qtext || '';
 
     if (target == "human") {
         return [ 
@@ -95,10 +113,14 @@ function crawl (queryText, options) {
         throw new Error("Invalid Arguments");
     }
 
-    let [ spider, id ] = summon(target, qtext);
+    let [ spider, id ] = summon({
+        target: target, 
+        qtext: qtext,
+        assign: options.assign,
+    });
 
     if (!spider) {
-        return Promise.resolve(null);
+        return Promise.reject('Crawler not found');
     }
 
     return spider.crawl({

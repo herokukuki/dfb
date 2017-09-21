@@ -49,8 +49,8 @@ function genId (seedValue) {
 module.exports.genId = genId;
 
 
-function cacheImageURLs (obj) {
-    let d = clone(obj);
+function cacheImageURLs (data) {
+    let d = clone(data);
 
     if (d instanceof HumanInfo) {
         for (var i=0; i<d.photos.length; i++) {
@@ -109,3 +109,27 @@ function cacheImageURLs (obj) {
 }
 
 module.exports.cacheImageURLs = cacheImageURLs;
+
+
+function cacheURLs (data) {
+    let d = clone(data);
+
+    if (d instanceof SearchResult) {
+        for (var i=0; i<d.results.length; i++) {
+            let obj = d.results[i];
+            let footprint = d.getFootprint(obj);
+            let id = genId(JSON.stringify(footprint));
+
+            cache.set('id', id, footprint);
+            d.results[i].url = id;
+        }
+
+        return d;
+    }
+
+    else {
+        return null;
+    }
+}
+
+module.exports.cacheURLs = cacheURLs;

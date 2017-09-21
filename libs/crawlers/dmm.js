@@ -33,6 +33,13 @@ function formatDuration (val) {
     return hours + ':' + minutes + ':' + '00';
 }
 
+function getFootprint (data) {
+    return {
+        "crawler": NAME,
+        "id": data.title,
+    };
+}
+
 function crawl (opt) {
     let url = "";
     if (typeof opt == 'string') {
@@ -64,6 +71,7 @@ function crawl (opt) {
                 let result = new SearchResult({
                     url: url,
                     queryString: $('input#searchstr').attr('value'),
+                    footprint: getFootprint,
                 });
 
                 $('#list > li > div').each((i, el) => {

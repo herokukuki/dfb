@@ -33,6 +33,13 @@ function formatDuration (val) {
     return hours + ':' + minutes + ':' + '00';
 }
 
+function getFootprint (data) {
+    return {
+        "crawler": NAME,
+        "id": data.title,
+    }
+}
+
 function crawl (opt) {
     let url = "";
     let lang = "en";
@@ -72,7 +79,8 @@ function crawl (opt) {
                     let result = new SearchResult({ 
                         url: url,
                         queryString: 
-                            util.replaceAll(url.split('keyword=')[1], '+', ' ')
+                            util.replaceAll(url.split('keyword=')[1], '+', ' '),
+                        footprint: getFootprint
                     });
 
                     $('div.videos > div').each((i, el) => {
