@@ -42,6 +42,7 @@ function thenIfSearch (d1, opt) {
 
     } else { // df.length == 1
         let u = df[0];
+        let dmm = crawlers['dmm'];
         let javlib = crawlers['javlibrary'];
         return Promise.all([
 
