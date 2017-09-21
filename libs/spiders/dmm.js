@@ -35,11 +35,14 @@ function crawl (opt) {
                                  v.url.indexOf('www.dmm.co.jp/mono/dvd/') > -1);
 
                         if (df.length == 0) {
-                            return d1;
+                            let d = clone(d1);
+                            d.results.reverse();
+                            return d;
 
                         } else if (df.length > 1) {
                             let d = clone(d1);
                             d.results = df;
+                            d.results.reverse();
                             return d;
 
                         } else { // df.length == 1
